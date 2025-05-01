@@ -3,6 +3,7 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" AND
     message(WARNING "To use the ONE_DPL backend, make sure you use an Intel compiler. Your compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
+add_compile_definitions(PSTL_BENCH_USE_GPU)
 add_compile_definitions(PSTL_BENCH_USE_ONE_DPL)
 
 add_compile_definitions(PSTL_BENCH_BACKEND="ONE_DPL")
