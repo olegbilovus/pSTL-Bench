@@ -16,6 +16,11 @@
 #include "for_each_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONE_DPL
+#include "for_each_one_dpl.h"
+#include <oneapi/dpl/execution>
+#endif
+
 //region for_each
 template<class Policy>
 static void for_each_std_wrapper(benchmark::State & state)
@@ -72,10 +77,32 @@ static void for_each_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion for_each_hpx
 
+//region for_each_one_dpl
+#ifdef PSTL_BENCH_USE_ONE_DPL
+template<class Policy>
+static void for_each_one_dpl_wrapper(benchmark::State & state)
+{
+	benchmark_for_each::benchmark_for_each_wrapper<Policy>(state, benchmark_for_each::for_each_one_dpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define FOR_EACH_ONE_DPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(for_each_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::for_each"))                                  \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define FOR_EACH_ONE_DPL_WRAPPER
+#endif
+//endregion for_each_one_dpl
+
 #define FOR_EACH_GROUP   \
 	FOR_EACH_SEQ_WRAPPER \
 	FOR_EACH_STD_WRAPPER \
 	FOR_EACH_GNU_WRAPPER \
-	FOR_EACH_HPX_WRAPPER
+	FOR_EACH_HPX_WRAPPER \
+	FOR_EACH_ONE_DPL_WRAPPER
 
 FOR_EACH_GROUP

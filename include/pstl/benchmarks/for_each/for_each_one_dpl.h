@@ -1,0 +1,13 @@
+#pragma once
+
+#include <oneapi/dpl/algorithm>
+#include <oneapi/dpl/execution>
+
+namespace benchmark_for_each
+{
+
+	const auto for_each_one_dpl = [](auto && policy, auto & input, auto && f) {
+		std::for_each(oneapi::dpl::execution::dpcpp_default, input.begin(), input.end(), f);
+	};
+
+} // namespace benchmark_for_each
