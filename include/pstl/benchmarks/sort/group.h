@@ -14,6 +14,11 @@
 #include "sort_hpx.h"
 #endif //USE_HPX
 
+#ifdef PSTL_BENCH_USE_ONE_DPL
+#include "sort_one_dpl.h"
+#include <oneapi/dpl/execution>
+#endif
+
 //region sort_std
 template<class Policy>
 static void sort_std_wrapper(benchmark::State & state)
@@ -70,10 +75,32 @@ static void sort_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion sort_hpx
 
+//region sort_one_dpl
+#ifdef PSTL_BENCH_USE_ONE_DPL
+template<class Policy>
+static void sort_one_dpl_wrapper(benchmark::State & state)
+{
+	benchmark_sort::benchmark_wrapper<Policy>(state, benchmark_sort::sort_one_dpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define SORT_ONE_DPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(sort_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::sort"))                                  \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define SORT_ONE_DPL_WRAPPER
+#endif
+//endregion sort_one_dpl
+
 #define SORT_GROUP   \
 	SORT_SEQ_WRAPPER \
 	SORT_STD_WRAPPER \
 	SORT_GNU_WRAPPER \
-	SORT_HPX_WRAPPER
+	SORT_HPX_WRAPPER \
+	SORT_ONE_DPL_WRAPPER
 
 SORT_GROUP
