@@ -10,6 +10,10 @@
 #include "copy_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONE_DPL
+#include "copy_one_dpl.h"
+#endif
+
 //region copy_std
 template<class Policy>
 static void copy_std_wrapper(benchmark::State & state)
@@ -49,6 +53,31 @@ static void copy_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion copy_hpx
 
-#define COPY_GROUP COPY_SEQ_WRAPPER COPY_STD_WRAPPER COPY_HPX_WRAPPER
+//region copy_one_dpl
+#ifdef PSTL_BENCH_USE_ONE_DPL
+template<class Policy>
+static void copy_one_dpl_wrapper(benchmark::State & state)
+{
+	benchmark_copy::benchmark_wrapper<Policy>(state, benchmark_copy::copy_one_dpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define COPY_ONE_DPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(copy_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::copy"))                                  \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define COPY_ONE_DPL_WRAPPER
+#endif
+//endregion copy_one_dpl
+
+#define COPY_GROUP   \
+	COPY_SEQ_WRAPPER \
+	COPY_STD_WRAPPER \
+	COPY_HPX_WRAPPER \
+	COPY_ONE_DPL_WRAPPER
 
 COPY_GROUP
