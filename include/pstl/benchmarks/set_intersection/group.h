@@ -15,6 +15,10 @@
 #include <hpx/executors/parallel_executor.hpp>
 #endif
 
+#ifdef PSTL_BENCH_USE_ONE_DPL
+#include "set_intersection_one_dpl.h"
+#endif
+
 //region set_intersection_std
 template<class Policy>
 static void set_intersection_std_wrapper(benchmark::State & state)
@@ -71,10 +75,32 @@ static void set_intersection_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion set_intersection_hpx
 
+//region set_intersection_one_dpl
+#ifdef PSTL_BENCH_USE_ONE_DPL
+template<class Policy>
+static void set_intersection_one_dpl_wrapper(benchmark::State & state)
+{
+	benchmark_set_intersection::benchmark_wrapper<Policy>(state, benchmark_set_intersection::set_intersection_one_dpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define SET_INTERSECTION_ONE_DPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(set_intersection_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::set_intersection"))                                  \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define SET_INTERSECTION_ONE_DPL_WRAPPER
+#endif
+//endregion set_intersection_one_dpl
+
 #define SET_INTERSECTION_GROUP   \
 	SET_INTERSECTION_SEQ_WRAPPER \
 	SET_INTERSECTION_STD_WRAPPER \
 	SET_INTERSECTION_GNU_WRAPPER \
-	SET_INTERSECTION_HPX_WRAPPER
+	SET_INTERSECTION_HPX_WRAPPER \
+	SET_INTERSECTION_ONE_DPL_WRAPPER
 
 SET_INTERSECTION_GROUP
