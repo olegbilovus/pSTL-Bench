@@ -10,6 +10,10 @@
 #include "none_of_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONE_DPL
+#include "none_of_one_dpl.h"
+#endif
+
 //region none_of_std
 template<class Policy>
 static void none_of_std_wrapper(benchmark::State & state)
@@ -49,9 +53,31 @@ static void none_of_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion none_of_hpx
 
+//region none_of_one_dpl
+#ifdef PSTL_BENCH_USE_ONE_DPL
+template<class Policy>
+static void none_of_one_dpl_wrapper(benchmark::State & state)
+{
+	benchmark_none_of::benchmark_wrapper<Policy>(state, benchmark_none_of::none_of_one_dpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define NONE_OF_ONE_DPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(none_of_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::none_of"))                                  \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define NONE_OF_ONE_DPL_WRAPPER
+#endif
+//endregion none_of_one_dpl
+
 #define NONE_OF_GROUP   \
 	NONE_OF_SEQ_WRAPPER \
 	NONE_OF_STD_WRAPPER \
-	NONE_OF_HPX_WRAPPER
+	NONE_OF_HPX_WRAPPER \
+	NONE_OF_ONE_DPL_WRAPPER
 
 NONE_OF_GROUP
