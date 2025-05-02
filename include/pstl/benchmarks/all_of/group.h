@@ -10,6 +10,10 @@
 #include "all_of_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONE_DPL
+#include "all_of_one_dpl.h"
+#endif
+
 //region all_of_std
 template<class Policy>
 static void all_of_std_wrapper(benchmark::State & state)
@@ -47,10 +51,33 @@ static void all_of_hpx_wrapper(benchmark::State & state)
 #else
 #define ALL_OF_HPX_WRAPPER
 #endif
+//endregion all_of_hpx
+
+//region all_of_one_dpl
+#ifdef PSTL_BENCH_USE_ONE_DPL
+template<class Policy>
+static void all_of_one_dpl_wrapper(benchmark::State & state)
+{
+	benchmark_all_of::benchmark_wrapper<Policy>(state, benchmark_all_of::all_of_one_dpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define ALL_OF_ONE_DPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(all_of_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::all_of"))                                  \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define ALL_OF_ONE_DPL_WRAPPER
+#endif
+//endregion all_of_one_dpl
 
 #define ALL_OF_GROUP   \
 	ALL_OF_SEQ_WRAPPER \
 	ALL_OF_STD_WRAPPER \
-	ALL_OF_HPX_WRAPPER
+	ALL_OF_HPX_WRAPPER \
+	ALL_OF_ONE_DPL_WRAPPER
 
 ALL_OF_GROUP
