@@ -11,7 +11,7 @@ option(PSTL_BENCH_USE_PAPI "Use PAPI for performance counters" OFF)
 option(PSTL_BENCH_USE_LIKWID "Use LIKWID for performance counters" OFF)
 
 set(PSTL_BENCH_BACKEND CACHE STRING "Select the backend to use for std:: algorithms")
-set_property(CACHE PSTL_BENCH_BACKEND PROPERTY STRINGS TBB GNU HPX NVHPC_OMP NVHPC_CUDA)
+set_property(CACHE PSTL_BENCH_BACKEND PROPERTY STRINGS TBB GNU HPX NVHPC_OMP NVHPC_CUDA ONEDPL)
 set(PSTL_BENCH_DATA_TYPE CACHE STRING "Select the data type to use for the benchmarks")
 set_property(CACHE PSTL_BENCH_DATA_TYPE PROPERTY STRINGS int float double)
 
@@ -58,6 +58,7 @@ register_backend(HPX)
 register_backend(GNU)
 register_backend(NVHPC_CUDA)
 register_backend(NVHPC_OMP)
+register_backend(ONEDPL)
 
 # Define the BENCHMARK_COMPILER macro to ${CMAKE_CXX_COMPILER_ID}
 add_compile_definitions(PSTL_BENCH_COMPILER="${CMAKE_CXX_COMPILER_ID}")

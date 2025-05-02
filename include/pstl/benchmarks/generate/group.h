@@ -14,6 +14,10 @@
 #include "generate_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "generate_onedpl.h"
+#endif
+
 //region generate_std
 template<class Policy>
 static void generate_std_wrapper(benchmark::State & state)
@@ -70,10 +74,32 @@ static void generate_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion generate_hpx
 
+//region generate_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
+template<class Policy>
+static void generate_onedpl_wrapper(benchmark::State & state)
+{
+	benchmark_generate::benchmark_wrapper<Policy>(state, benchmark_generate::generate_onedpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define GENERATE_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(generate_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::generate"))                                 \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define GENERATE_ONEDPL_WRAPPER
+#endif
+//endregion generate_onedpl
+
 #define GENERATE_GROUP   \
 	GENERATE_SEQ_WRAPPER \
 	GENERATE_STD_WRAPPER \
 	GENERATE_GNU_WRAPPER \
-	GENERATE_HPX_WRAPPER
+	GENERATE_HPX_WRAPPER \
+	GENERATE_ONEDPL_WRAPPER
 
 GENERATE_GROUP

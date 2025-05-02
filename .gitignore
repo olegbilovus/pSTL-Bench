@@ -825,3 +825,7 @@ $RECYCLE.BIN/
 
 # End of 
 https://www.toptal.com/developers/gitignore/api/macos,c++,vim,emacs,nanoc,clion,clion+all,clion+iml,jetbrains,jetbrains+all,jetbrains+iml,windows,linux,cuda,python
+
+
+# VSCODE
+.vscode/

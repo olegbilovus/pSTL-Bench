@@ -14,6 +14,10 @@
 #include "merge_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "merge_onedpl.h"
+#endif
+
 //region merge_std
 template<class Policy>
 static void merge_std_wrapper(benchmark::State & state)
@@ -70,10 +74,32 @@ static void merge_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion merge_hpx
 
+//region merge_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
+template<class Policy>
+static void merge_onedpl_wrapper(benchmark::State & state)
+{
+	benchmark_merge::benchmark_wrapper<Policy>(state, benchmark_merge::merge_onedpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define MERGE_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(merge_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::merge"))                                 \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define MERGE_ONEDPL_WRAPPER
+#endif
+//endregion merge_onedpl
+
 #define MERGE_GROUP   \
 	MERGE_SEQ_WRAPPER \
 	MERGE_STD_WRAPPER \
 	MERGE_GNU_WRAPPER \
-	MERGE_HPX_WRAPPER
+	MERGE_HPX_WRAPPER \
+	MERGE_ONEDPL_WRAPPER
 
 MERGE_GROUP

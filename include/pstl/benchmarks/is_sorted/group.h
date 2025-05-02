@@ -10,6 +10,10 @@
 #include "is_sorted_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "is_sorted_onedpl.h"
+#endif
+
 //region is_sorted_std
 template<class Policy>
 static void is_sorted_std_wrapper(benchmark::State & state)
@@ -49,9 +53,31 @@ static void is_sorted_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion is_sorted_hpx
 
+//region is_sorted_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
+template<class Policy>
+static void is_sorted_onedpl_wrapper(benchmark::State & state)
+{
+	benchmark_is_sorted::benchmark_wrapper<Policy>(state, benchmark_is_sorted::is_sorted_onedpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define IS_SORTED_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(is_sorted_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::is_sorted"))                                 \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define IS_SORTED_ONEDPL_WRAPPER
+#endif
+//endregion is_sorted_onedpl
+
 #define IS_SORTED_GROUP   \
 	IS_SORTED_SEQ_WRAPPER \
 	IS_SORTED_STD_WRAPPER \
-	IS_SORTED_HPX_WRAPPER
+	IS_SORTED_HPX_WRAPPER \
+	IS_SORTED_ONEDPL_WRAPPER
 
 IS_SORTED_GROUP

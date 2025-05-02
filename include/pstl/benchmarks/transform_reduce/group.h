@@ -12,6 +12,10 @@
 #include "transform_reduce_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "transform_reduce_onedpl.h"
+#endif
+
 //region transform_reduce
 template<class Policy>
 static void transform_reduce_std_wrapper(benchmark::State & state)
@@ -51,9 +55,31 @@ static void transform_reduce_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion transform_reduce_hpx
 
+//region transform_reduce_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
+template<class Policy>
+static void transform_reduce_onedpl_wrapper(benchmark::State & state)
+{
+	benchmark_transform_reduce::benchmark_wrapper<Policy>(state, benchmark_transform_reduce::transform_reduce_onedpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define TRANSFORM_REDUCE_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(transform_reduce_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::transform_reduce"))                                 \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define TRANSFORM_REDUCE_ONEDPL_WRAPPER
+#endif
+//endregion transform_reduce_onedpl
+
 #define TRANSFORM_REDUCE_GROUP   \
 	TRANSFORM_REDUCE_SEQ_WRAPPER \
 	TRANSFORM_REDUCE_STD_WRAPPER \
-	TRANSFORM_REDUCE_HPX_WRAPPER
+	TRANSFORM_REDUCE_HPX_WRAPPER \
+	TRANSFORM_REDUCE_ONEDPL_WRAPPER
 
 TRANSFORM_REDUCE_GROUP

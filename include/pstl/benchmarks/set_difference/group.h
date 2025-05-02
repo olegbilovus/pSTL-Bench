@@ -15,6 +15,10 @@
 #include <hpx/executors/parallel_executor.hpp>
 #endif
 
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "set_difference_onedpl.h"
+#endif
+
 //region set_difference_std
 template<class Policy>
 static void set_difference_std_wrapper(benchmark::State & state)
@@ -71,10 +75,32 @@ static void set_difference_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion set_difference_hpx
 
+//region set_difference_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
+template<class Policy>
+static void set_difference_onedpl_wrapper(benchmark::State & state)
+{
+	benchmark_set_difference::benchmark_wrapper<Policy>(state, benchmark_set_difference::set_difference_onedpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define SET_DIFFERENCE_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(set_difference_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::set_difference"))                                 \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define SET_DIFFERENCE_ONEDPL_WRAPPER
+#endif
+//endregion set_difference_onedpl
+
 #define SET_DIFFERENCE_GROUP   \
 	SET_DIFFERENCE_SEQ_WRAPPER \
 	SET_DIFFERENCE_STD_WRAPPER \
 	SET_DIFFERENCE_GNU_WRAPPER \
-	SET_DIFFERENCE_HPX_WRAPPER
+	SET_DIFFERENCE_HPX_WRAPPER \
+	SET_DIFFERENCE_ONEDPL_WRAPPER
 
 SET_DIFFERENCE_GROUP

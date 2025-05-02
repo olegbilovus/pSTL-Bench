@@ -16,6 +16,10 @@
 #include "transform_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "transform_onedpl.h"
+#endif
+
 //region transform
 template<class Policy>
 static void transform_std_wrapper(benchmark::State & state)
@@ -72,10 +76,32 @@ static void transform_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion transform_hpx
 
+//region transform_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
+template<class Policy>
+static void transform_onedpl_wrapper(benchmark::State & state)
+{
+	benchmark_transform::benchmark_wrapper<Policy>(state, benchmark_transform::transform_onedpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define TRANSFORM_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(transform_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::transform"))                                 \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define TRANSFORM_ONEDPL_WRAPPER
+#endif
+//endregion transform_onedpl
+
 #define TRANSFORM_GROUP   \
 	TRANSFORM_SEQ_WRAPPER \
 	TRANSFORM_STD_WRAPPER \
 	TRANSFORM_GNU_WRAPPER \
-	TRANSFORM_HPX_WRAPPER
+	TRANSFORM_HPX_WRAPPER \
+	TRANSFORM_ONEDPL_WRAPPER
 
 TRANSFORM_GROUP

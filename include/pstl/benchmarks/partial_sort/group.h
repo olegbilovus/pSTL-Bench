@@ -14,6 +14,10 @@
 #include "partial_sort_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "partial_sort_onedpl.h"
+#endif
+
 //region partial_sort_std
 template<class Policy>
 static void partial_sort_std_wrapper(benchmark::State & state)
@@ -23,13 +27,13 @@ static void partial_sort_std_wrapper(benchmark::State & state)
 
 #define PARTIAL_SORT_SEQ_WRAPPER                                                    \
 	BENCHMARK_TEMPLATE1(partial_sort_std_wrapper, std::execution::sequenced_policy) \
-	    ->Name(PSTL_BENCH_BENCHMARK_NAME_WITH_BACKEND("SEQ", "std::partial_sort"))             \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME_WITH_BACKEND("SEQ", "std::partial_sort"))  \
 	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
 
 #ifdef PSTL_BENCH_USE_PSTL
 #define PARTIAL_SORT_STD_WRAPPER                                                               \
 	BENCHMARK_TEMPLATE1(partial_sort_std_wrapper, std::execution::parallel_unsequenced_policy) \
-	    ->Name(PSTL_BENCH_BENCHMARK_NAME("std::partial_sort"))                                            \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("std::partial_sort"))                                 \
 	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
 #else
 #define PARTIAL_SORT_STD_WRAPPER
@@ -46,7 +50,7 @@ static void partial_sort_gnu_wrapper(benchmark::State & state)
 
 #define PARTIAL_SORT_GNU_WRAPPER                                                               \
 	BENCHMARK_TEMPLATE1(partial_sort_gnu_wrapper, std::execution::parallel_unsequenced_policy) \
-	    ->Name(PSTL_BENCH_BENCHMARK_NAME("gnu::partial_sort"))                                            \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("gnu::partial_sort"))                                 \
 	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
 #else
 #define PARTIAL_SORT_GNU_WRAPPER
@@ -63,17 +67,39 @@ static void partial_sort_hpx_wrapper(benchmark::State & state)
 
 #define PARTIAL_SORT_HPX_WRAPPER                                                               \
 	BENCHMARK_TEMPLATE1(partial_sort_hpx_wrapper, hpx::execution::parallel_unsequenced_policy) \
-	    ->Name(PSTL_BENCH_BENCHMARK_NAME("hpx::partial_sort"))                                            \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("hpx::partial_sort"))                                 \
 	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
 #else
 #define PARTIAL_SORT_HPX_WRAPPER
 #endif
 //endregion partial_sort_hpx
 
+//region partial_sort_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
+template<class Policy>
+static void partial_sort_onedpl_wrapper(benchmark::State & state)
+{
+	benchmark_partial_sort::benchmark_wrapper<Policy>(state, benchmark_partial_sort::partial_sort_onedpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define PARTIAL_SORT_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(partial_sort_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::partial_sort"))                                 \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define PARTIAL_SORT_ONEDPL_WRAPPER
+#endif
+//endregion partial_sort_onedpl
+
 #define PARTIAL_SORT_GROUP   \
 	PARTIAL_SORT_SEQ_WRAPPER \
 	PARTIAL_SORT_STD_WRAPPER \
 	PARTIAL_SORT_GNU_WRAPPER \
-	PARTIAL_SORT_HPX_WRAPPER
+	PARTIAL_SORT_HPX_WRAPPER \
+	PARTIAL_SORT_ONEDPL_WRAPPER
 
 PARTIAL_SORT_GROUP

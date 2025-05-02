@@ -14,6 +14,10 @@
 #include "adjacent_difference_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "adjacent_difference_onedpl.h"
+#endif
+
 //region adjacent_difference_std
 template<class Policy>
 static void adjacent_difference_std_wrapper(benchmark::State & state)
@@ -71,12 +75,36 @@ static void adjacent_difference_hpx_wrapper(benchmark::State & state)
 #else
 #define ADJACENT_DIFFERENCE_HPX_WRAPPER
 #endif
+//endregion adjacent_difference_hpx
+
+//region adjacent_difference_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
+template<class Policy>
+static void adjacent_difference_onedpl_wrapper(benchmark::State & state)
+{
+	benchmark_adjacent_difference::benchmark_wrapper<Policy>(state,
+	                                                         benchmark_adjacent_difference::adjacent_difference_onedpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define ADJACENT_DIFFERENCE_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(adjacent_difference_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::adjacent_difference"))                                 \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define ADJACENT_DIFFERENCE_ONEDPL_WRAPPER
+#endif
+//endregion adjacent_difference_onedpl
 
 #define ADJACENT_DIFFERENCE_GROUP   \
 	ADJACENT_DIFFERENCE_SEQ_WRAPPER \
 	ADJACENT_DIFFERENCE_STD_WRAPPER \
 	ADJACENT_DIFFERENCE_GNU_WRAPPER \
-	ADJACENT_DIFFERENCE_HPX_WRAPPER
+	ADJACENT_DIFFERENCE_HPX_WRAPPER \
+	ADJACENT_DIFFERENCE_ONEDPL_WRAPPER
 
 
 ADJACENT_DIFFERENCE_GROUP

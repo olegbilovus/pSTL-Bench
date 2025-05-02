@@ -10,6 +10,10 @@
 #include "fill_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "fill_onedpl.h"
+#endif
+
 //region fill_std
 template<class Policy>
 static void fill_std_wrapper(benchmark::State & state)
@@ -49,9 +53,31 @@ static void fill_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion fill_hpx
 
+//region fill_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
+template<class Policy>
+static void fill_onedpl_wrapper(benchmark::State & state)
+{
+	benchmark_fill::benchmark_wrapper<Policy>(state, benchmark_fill::fill_onedpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define FILL_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(fill_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::fill"))                                 \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define FILL_ONEDPL_WRAPPER
+#endif
+//endregion fill_onedpl
+
 #define FILL_GROUP   \
 	FILL_SEQ_WRAPPER \
 	FILL_STD_WRAPPER \
-	FILL_HPX_WRAPPER
+	FILL_HPX_WRAPPER \
+	FILL_ONEDPL_WRAPPER
 
 FILL_GROUP

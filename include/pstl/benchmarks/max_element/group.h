@@ -14,6 +14,10 @@
 #include "max_element_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "max_element_onedpl.h"
+#endif
+
 //region max_element_std
 template<class Policy>
 static void max_element_std_wrapper(benchmark::State & state)
@@ -70,10 +74,32 @@ static void max_element_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion max_element_hpx
 
+//region max_element_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
+template<class Policy>
+static void max_element_onedpl_wrapper(benchmark::State & state)
+{
+	benchmark_max_element::benchmark_wrapper<Policy>(state, benchmark_max_element::max_element_onedpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define MAX_ELEMENT_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(max_element_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::max_element"))                                 \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define MAX_ELEMENT_ONEDPL_WRAPPER
+#endif
+//endregion max_element_onedpl
+
 #define MAX_ELEMENT_GROUP   \
 	MAX_ELEMENT_SEQ_WRAPPER \
 	MAX_ELEMENT_STD_WRAPPER \
 	MAX_ELEMENT_GNU_WRAPPER \
-	MAX_ELEMENT_HPX_WRAPPER
+	MAX_ELEMENT_HPX_WRAPPER \
+	MAX_ELEMENT_ONEDPL_WRAPPER
 
 MAX_ELEMENT_GROUP

@@ -18,6 +18,10 @@
 #include <parallel/algorithm>
 #endif
 
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include <oneapi/dpl/algorithm>
+#endif
+
 #endif
 
 namespace pstl
