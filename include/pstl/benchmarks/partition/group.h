@@ -14,6 +14,10 @@
 #include "partition_hpx.h"
 #endif
 
+#ifdef PSTL_BENCH_USE_ONE_DPL
+#include "partition_one_dpl.h"
+#endif
+
 //region partition_std
 template<class Policy>
 static void partition_std_wrapper(benchmark::State & state)
@@ -70,10 +74,32 @@ static void partition_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion partition_hpx
 
+//region partition_one_dpl
+#ifdef PSTL_BENCH_USE_ONE_DPL
+template<class Policy>
+static void partition_one_dpl_wrapper(benchmark::State & state)
+{
+	benchmark_partition::benchmark_wrapper<Policy>(state, benchmark_partition::partition_one_dpl);
+}
+
+/*
+the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
+Check the algorithm implementation.
+*/
+#define PARTITION_ONE_DPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(partition_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::partition"))                                  \
+	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
+#else
+#define PARTITION_ONE_DPL_WRAPPER
+#endif
+//endregion partition_one_dpl
+
 #define PARTITION_GROUP   \
 	PARTITION_SEQ_WRAPPER \
 	PARTITION_STD_WRAPPER \
 	PARTITION_GNU_WRAPPER \
-	PARTITION_HPX_WRAPPER
+	PARTITION_HPX_WRAPPER \
+	PARTITION_ONE_DPL_WRAPPER
 
 PARTITION_GROUP
