@@ -10,8 +10,8 @@
 #include "exclusive_scan_hpx.h"
 #endif
 
-#ifdef PSTL_BENCH_USE_ONE_DPL
-#include "exclusive_scan_one_dpl.h"
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "exclusive_scan_onedpl.h"
 #endif
 
 //region exclusive_scan_std
@@ -53,31 +53,31 @@ static void exclusive_scan_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion exclusive_scan_hpx
 
-//region exclusive_scan_one_dpl
-#ifdef PSTL_BENCH_USE_ONE_DPL
+//region exclusive_scan_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
 template<class Policy>
-static void exclusive_scan_one_dpl_wrapper(benchmark::State & state)
+static void exclusive_scan_onedpl_wrapper(benchmark::State & state)
 {
-	benchmark_exclusive_scan::benchmark_wrapper<Policy>(state, benchmark_exclusive_scan::exclusive_scan_one_dpl);
+	benchmark_exclusive_scan::benchmark_wrapper<Policy>(state, benchmark_exclusive_scan::exclusive_scan_onedpl);
 }
 
 /*
 the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
 Check the algorithm implementation.
 */
-#define EXCLUSIVE_SCAN_ONE_DPL_WRAPPER                                                               \
-	BENCHMARK_TEMPLATE1(exclusive_scan_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
-	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::exclusive_scan"))                                  \
+#define EXCLUSIVE_SCAN_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(exclusive_scan_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::exclusive_scan"))                                 \
 	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
 #else
-#define EXCLUSIVE_SCAN_ONE_DPL_WRAPPER
+#define EXCLUSIVE_SCAN_ONEDPL_WRAPPER
 #endif
-//endregion exclusive_scan_one_dpl
+//endregion exclusive_scan_onedpl
 
 #define EXCLUSIVE_SCAN_GROUP   \
 	EXCLUSIVE_SCAN_SEQ_WRAPPER \
 	EXCLUSIVE_SCAN_STD_WRAPPER \
 	EXCLUSIVE_SCAN_HPX_WRAPPER \
-	EXCLUSIVE_SCAN_ONE_DPL_WRAPPER
+	EXCLUSIVE_SCAN_ONEDPL_WRAPPER
 
 EXCLUSIVE_SCAN_GROUP

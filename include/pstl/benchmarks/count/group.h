@@ -14,8 +14,8 @@
 #include "count_hpx.h"
 #endif
 
-#ifdef PSTL_BENCH_USE_ONE_DPL
-#include "count_one_dpl.h"
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "count_onedpl.h"
 #endif
 
 //region count_std
@@ -73,32 +73,32 @@ static void count_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion count_hpx
 
-//region count_one_dpl
-#ifdef PSTL_BENCH_USE_ONE_DPL
+//region count_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
 template<class Policy>
-static void count_one_dpl_wrapper(benchmark::State & state)
+static void count_onedpl_wrapper(benchmark::State & state)
 {
-	benchmark_count::benchmark_wrapper<Policy>(state, benchmark_count::count_one_dpl);
+	benchmark_count::benchmark_wrapper<Policy>(state, benchmark_count::count_onedpl);
 }
 
 /*
 the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
 Check the algorithm implementation.
 */
-#define COUNT_ONE_DPL_WRAPPER                                                               \
-	BENCHMARK_TEMPLATE1(count_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
-	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::count"))                                  \
+#define COUNT_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(count_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::count"))                                 \
 	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
 #else
-#define COUNT_ONE_DPL_WRAPPER
+#define COUNT_ONEDPL_WRAPPER
 #endif
-//endregion count_one_dpl
+//endregion count_onedpl
 
 #define COUNT_GROUP   \
 	COUNT_SEQ_WRAPPER \
 	COUNT_STD_WRAPPER \
 	COUNT_GNU_WRAPPER \
 	COUNT_HPX_WRAPPER \
-	COUNT_ONE_DPL_WRAPPER
+	COUNT_ONEDPL_WRAPPER
 
 COUNT_GROUP

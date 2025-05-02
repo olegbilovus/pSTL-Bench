@@ -14,8 +14,8 @@
 #include "adjacent_find_hpx.h"
 #endif
 
-#ifdef PSTL_BENCH_USE_ONE_DPL
-#include "adjacent_find_one_dpl.h"
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "adjacent_find_onedpl.h"
 #endif
 
 //region adjacent_find_std
@@ -74,32 +74,32 @@ static void adjacent_find_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion adjacent_find_hpx
 
-//region adjacent_find_one_dpl
-#ifdef PSTL_BENCH_USE_ONE_DPL
+//region adjacent_find_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
 template<class Policy>
-static void adjacent_find_one_dpl_wrapper(benchmark::State & state)
+static void adjacent_find_onedpl_wrapper(benchmark::State & state)
 {
-	benchmark_adjacent_find::benchmark_wrapper<Policy>(state, benchmark_adjacent_find::adjacent_find_one_dpl);
+	benchmark_adjacent_find::benchmark_wrapper<Policy>(state, benchmark_adjacent_find::adjacent_find_onedpl);
 }
 
 /*
 the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
 Check the algorithm implementation.
 */
-#define ADJACENT_FIND_ONE_DPL_WRAPPER                                                               \
-	BENCHMARK_TEMPLATE1(adjacent_find_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
-	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::adjacent_find"))                                  \
+#define ADJACENT_FIND_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(adjacent_find_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::adjacent_find"))                                 \
 	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
 #else
-#define ADJACENT_FIND_ONE_DPL_WRAPPER
+#define ADJACENT_FIND_ONEDPL_WRAPPER
 #endif
-//endregion adjacent_find_one_dpl
+//endregion adjacent_find_onedpl
 
 #define ADJACENT_FIND_GROUP   \
 	ADJACENT_FIND_SEQ_WRAPPER \
 	ADJACENT_FIND_STD_WRAPPER \
 	ADJACENT_FIND_GNU_WRAPPER \
 	ADJACENT_FIND_HPX_WRAPPER \
-	ADJACENT_FIND_ONE_DPL_WRAPPER
+	ADJACENT_FIND_ONEDPL_WRAPPER
 
 ADJACENT_FIND_GROUP

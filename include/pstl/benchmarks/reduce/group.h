@@ -14,8 +14,8 @@
 #include "reduce_hpx.h"
 #endif
 
-#ifdef PSTL_BENCH_USE_ONE_DPL
-#include "reduce_one_dpl.h"
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "reduce_onedpl.h"
 #endif
 
 //region reduce_std
@@ -74,32 +74,32 @@ static void reduce_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion reduce_hpx
 
-//region reduce_one_dpl
-#ifdef PSTL_BENCH_USE_ONE_DPL
+//region reduce_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
 template<class Policy>
-static void reduce_one_dpl_wrapper(benchmark::State & state)
+static void reduce_onedpl_wrapper(benchmark::State & state)
 {
-	benchmark_reduce::benchmark_wrapper<Policy>(state, benchmark_reduce::reduce_one_dpl);
+	benchmark_reduce::benchmark_wrapper<Policy>(state, benchmark_reduce::reduce_onedpl);
 }
 
 /*
 the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
 Check the algorithm implementation.
 */
-#define REDUCE_ONE_DPL_WRAPPER                                                               \
-	BENCHMARK_TEMPLATE1(reduce_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
-	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::reduce"))                                  \
+#define REDUCE_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(reduce_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::reduce"))                                 \
 	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
 #else
-#define REDUCE_ONE_DPL_WRAPPER
+#define REDUCE_ONEDPL_WRAPPER
 #endif
-//endregion reduce_one_dpl
+//endregion reduce_onedpl
 
 #define REDUCE_GROUP   \
 	REDUCE_SEQ_WRAPPER \
 	REDUCE_STD_WRAPPER \
 	REDUCE_GNU_WRAPPER \
 	REDUCE_HPX_WRAPPER \
-	REDUCE_ONE_DPL_WRAPPER
+	REDUCE_ONEDPL_WRAPPER
 
 REDUCE_GROUP

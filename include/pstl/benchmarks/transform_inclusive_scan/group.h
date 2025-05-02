@@ -12,8 +12,8 @@
 #include "transform_inclusive_scan_hpx.h"
 #endif
 
-#ifdef PSTL_BENCH_USE_ONE_DPL
-#include "transform_inclusive_scan_one_dpl.h"
+#ifdef PSTL_BENCH_USE_ONEDPL
+#include "transform_inclusive_scan_onedpl.h"
 #endif
 
 //region transform_inclusive_scan
@@ -57,32 +57,32 @@ static void transform_inclusive_scan_hpx_wrapper(benchmark::State & state)
 #endif
 //endregion transform_inclusive_scan_hpx
 
-//region transform_inclusive_scan_one_dpl
-#ifdef PSTL_BENCH_USE_ONE_DPL
+//region transform_inclusive_scan_onedpl
+#ifdef PSTL_BENCH_USE_ONEDPL
 template<class Policy>
-static void transform_inclusive_scan_one_dpl_wrapper(benchmark::State & state)
+static void transform_inclusive_scan_onedpl_wrapper(benchmark::State & state)
 {
 	benchmark_transform_inclusive_scan::benchmark_wrapper<Policy>(
-	    state, benchmark_transform_inclusive_scan::transform_inclusive_scan_one_dpl);
+	    state, benchmark_transform_inclusive_scan::transform_inclusive_scan_onedpl);
 }
 
 /*
 the std policy is just a placeholder, it will use oneapi::dpl::execution::dpcpp_default when executing the algorithm. 
 Check the algorithm implementation.
 */
-#define TRANSFORM_INCLUSIVE_SCAN_ONE_DPL_WRAPPER                                                               \
-	BENCHMARK_TEMPLATE1(transform_inclusive_scan_one_dpl_wrapper, std::execution::parallel_unsequenced_policy) \
-	    ->Name(PSTL_BENCH_BENCHMARK_NAME("oneDPL::transform_inclusive_scan"))                                  \
+#define TRANSFORM_INCLUSIVE_SCAN_ONEDPL_WRAPPER                                                               \
+	BENCHMARK_TEMPLATE1(transform_inclusive_scan_onedpl_wrapper, std::execution::parallel_unsequenced_policy) \
+	    ->Name(PSTL_BENCH_BENCHMARK_NAME("onedpl::transform_inclusive_scan"))                                 \
 	    ->PSTL_BENCH_BENCHMARK_PARAMETERS
 #else
-#define TRANSFORM_INCLUSIVE_SCAN_ONE_DPL_WRAPPER
+#define TRANSFORM_INCLUSIVE_SCAN_ONEDPL_WRAPPER
 #endif
-//endregion transform_inclusive_scan_one_dpl
+//endregion transform_inclusive_scan_onedpl
 
 #define TRANSFORM_INCLUSIVE_SCAN_GROUP   \
 	TRANSFORM_INCLUSIVE_SCAN_SEQ_WRAPPER \
 	TRANSFORM_INCLUSIVE_SCAN_STD_WRAPPER \
 	TRANSFORM_INCLUSIVE_SCAN_HPX_WRAPPER \
-	TRANSFORM_INCLUSIVE_SCAN_ONE_DPL_WRAPPER
+	TRANSFORM_INCLUSIVE_SCAN_ONEDPL_WRAPPER
 
 TRANSFORM_INCLUSIVE_SCAN_GROUP

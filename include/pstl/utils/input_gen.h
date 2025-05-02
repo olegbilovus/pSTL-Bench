@@ -18,7 +18,7 @@
 #include <parallel/algorithm>
 #endif
 
-#ifdef PSTL_BENCH_USE_ONE_DPL
+#ifdef PSTL_BENCH_USE_ONEDPL
 #include <oneapi/dpl/algorithm>
 #endif
 

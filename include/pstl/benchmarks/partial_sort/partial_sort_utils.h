@@ -23,8 +23,7 @@ namespace benchmark_partial_sort
 
 			auto middle = input.begin() + (input.size() / 2);
 
-			pstl::wrap_timing(state, std::forward<Function>(F), execution_policy, input.begin(), middle,
-			                  input.end());
+			pstl::wrap_timing(state, std::forward<Function>(F), execution_policy, input.begin(), middle, input.end());
 
 			assert((std::is_sorted(input.begin(), middle)));
 		}
@@ -32,5 +31,3 @@ namespace benchmark_partial_sort
 		state.SetBytesProcessed(pstl::computed_bytes(state, input));
 	}
 } // namespace benchmark_partial_sort
-
-
