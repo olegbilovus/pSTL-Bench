@@ -127,6 +127,8 @@ namespace pstl
 		hpx::for_each(execution_policy, v.begin(), v.end(), body);
 #elif defined(PSTL_BENCH_USE_GNU)
 		__gnu_parallel::for_each(v.begin(), v.end(), body);
+#elif defined(PSTL_BENCH_USE_ONEDPL)
+		oneapi::dpl::for_each(execution_policy, v.begin(), v.end(), body);
 #else
 		std::for_each(execution_policy, v.begin(), v.end(), body);
 #endif
