@@ -3,28 +3,9 @@ library(pacman)
 pacman::p_load(rio, ggplot2, tidyverse, lemon)
 theme_set(theme_bw())
 
-# Get arguments from the command line
-args <- commandArgs(trailingOnly = TRUE)
 
-# Check if arguments are provided
-if (length(args) < 2) {
-  stop("Please provide the CSV file path and the plot title as arguments.")
-
-  plot_title <- "MYPC"
-}
-
-csv_file_path <- args[1] # First argument: CSV file path
-plot_title <- args[2] # Second argument: Plot title
-
-if (is.na(csv_file_path)) {
-  # This are needed just to run the script without arguments on rstudio
-  csv_file_path <- "csv_data/for_each__kit1.csv"
-}
-
-if (is.na(plot_title)) {
-  # This are needed just to run the script without arguments on rstudio
-  plot_title <- "MYPC"
-}
+csv_file_path <- "csv_data/problemSize_time.csv"
+plot_title <- "MYPC"
 
 # Import the data
 data <- import(csv_file_path)
@@ -83,7 +64,7 @@ p <- ggplot(data, aes(x = log2(elements), y = log10(real_time), color = name, sh
   ) +
   labs(title = plot_title) +
   theme(
-    panel.grid.minor = element_line(color = "white", linewidth = 0), # Major grid lines
+    panel.grid.minor = element_blank(), # Remove minor grid lines
     panel.grid.major = element_line(color = "lightgray", linewidth = 0.25, linetype = "dashed"), # Minor grid lines
     legend.background = element_rect(fill = scales::alpha("white", 0.75), color = "black"), # Add a border around the legend
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5), # Add a border around the plot
