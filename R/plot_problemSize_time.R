@@ -5,7 +5,7 @@ theme_set(theme_bw())
 
 
 csv_file_path <- "csv_data/problemSize_time.csv"
-plot_title <- "MYPC"
+plot_title <- NULL
 
 # Import the data
 data <- import(csv_file_path)

@@ -5,7 +5,7 @@ theme_set(theme_bw())
 
 csv_default_allocator <- "csv_data/defaultAllocator.csv"
 csv_custom_allocator <- "csv_data/customAllocator.csv"
-plot_title <- "MYPC"
+plot_title <- NULL
 
 # Import the data
 data_default <- import(csv_default_allocator)
