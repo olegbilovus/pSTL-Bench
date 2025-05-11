@@ -24,6 +24,6 @@ namespace benchmark_reduce
 			assert(pstl::are_equivalent(output, solution));
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input));
+		pstl::add_global_custom_statistics(state, input);
 	}
 } // namespace benchmark_reduce

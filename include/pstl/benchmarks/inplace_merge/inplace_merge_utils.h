@@ -31,6 +31,6 @@ namespace benchmark_inplace_merge
 			assert((std::is_sorted(input.begin(), input.end())));
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input));
+		pstl::add_global_custom_statistics(state, input);
 	}
 } // namespace benchmark_inplace_merge

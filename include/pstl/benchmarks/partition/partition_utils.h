@@ -32,6 +32,6 @@ namespace benchmark_partition
 			assert(std::is_partitioned(input.begin(), input.end(), condition));
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input));
+		pstl::add_global_custom_statistics(state, input);
 	}
 } // namespace benchmark_partition

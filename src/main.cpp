@@ -16,23 +16,26 @@
 
 #include "pstl/benchmarks/pstl-benchmarks.h"
 
+
+// Global variable to store the number of threads
+int GLOBAL_NUM_THREADS;
+
 // Run the benchmark
 int main(int argc, char ** argv)
 {
-#ifdef PSTL_BENCH_USE_TBB
-	auto tbbThreadControl = init_tbb_thread_control();
-#endif
-
-	benchmark::AddCustomContext("std::thread::hardware_concurrency()",
-	                            std::to_string(std::thread::hardware_concurrency()));
-
 #if defined(PSTL_BENCH_USE_TBB)
-	benchmark::AddCustomContext("tbb #threads", std::to_string(tbb::global_control::active_value(
-	                                                tbb::global_control::max_allowed_parallelism)));
+	auto tbbThreadControl = init_tbb_thread_control();
+	GLOBAL_NUM_THREADS    = tbb::global_control::active_value(tbb::global_control::max_allowed_parallelism);
+	benchmark::AddCustomContext("tbb #threads", std::to_string(GLOBAL_NUM_THREADS));
 #elif defined(PSTL_BENCH_USE_GNU_PSTL)
-	benchmark::AddCustomContext("omp #threads", std::to_string(omp_get_max_threads()));
+	GLOBAL_NUM_THREADS = omp_get_max_threads();
+	benchmark::AddCustomContext("omp #threads", std::to_string(GLOBAL_NUM_THREADS));
 #elif defined(PSTL_BENCH_USE_HPX)
-	benchmark::AddCustomContext("hpx #threads", std::to_string(hpx::get_num_worker_threads()));
+	GLOBAL_NUM_THREADS = hpx::get_num_worker_threads();
+	benchmark::AddCustomContext("hpx #threads", std::to_string(GLOBAL_NUM_THREADS));
+#else
+	GLOBAL_NUM_THREADS = std::thread::hardware_concurrency();
+	benchmark::AddCustomContext("std::threads #threads", std::to_string(GLOBAL_NUM_THREADS));
 #endif
 
 #ifdef PSTL_BENCH_USE_PAPI

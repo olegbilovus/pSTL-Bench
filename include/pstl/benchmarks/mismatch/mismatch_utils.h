@@ -35,6 +35,6 @@ namespace benchmark_mismatch
 			assert((solution.first - data1.begin()) == (output.first - data1.begin()));
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, data1, data2));
+		pstl::add_global_custom_statistics(state, data1, data2);
 	}
 } // namespace benchmark_mismatch

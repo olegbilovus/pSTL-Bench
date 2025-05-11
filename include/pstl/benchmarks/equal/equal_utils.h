@@ -24,6 +24,6 @@ namespace benchmark_equal
 			pstl::wrap_timing(state, std::forward<Function>(F), execution_policy, data1, data2);
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, data1, data2));
+		pstl::add_global_custom_statistics(state, data1, data2);
 	}
 } // namespace benchmark_equal

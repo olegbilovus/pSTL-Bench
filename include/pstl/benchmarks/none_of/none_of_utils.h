@@ -29,7 +29,7 @@ namespace benchmark_none_of
 			assert(pstl::are_equivalent(output, true));
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input));
+		pstl::add_global_custom_statistics(state, input);
 	}
 
 } // namespace benchmark_none_of

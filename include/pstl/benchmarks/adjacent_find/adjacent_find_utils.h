@@ -37,6 +37,6 @@ namespace benchmark_adjacent_find
 			input[index] = input[index + 1] - 1;
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input));
+		pstl::add_global_custom_statistics(state, input);
 	}
 } // namespace benchmark_adjacent_find

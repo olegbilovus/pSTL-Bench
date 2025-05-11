@@ -38,6 +38,6 @@ namespace benchmark_set_intersection
 			std::fill(output.begin(), output.end(), std::numeric_limits<pstl::elem_t>::quiet_NaN());
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, data1, data2));
+		pstl::add_global_custom_statistics(state, data1, data2);
 	}
 } // namespace benchmark_set_intersection

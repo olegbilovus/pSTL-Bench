@@ -44,6 +44,6 @@ namespace benchmark_find
 			assert(output == std::find(input.begin(), input.end(), value));
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input));
+		pstl::add_global_custom_statistics(state, input);
 	}
 } // namespace benchmark_find

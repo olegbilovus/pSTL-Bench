@@ -26,6 +26,6 @@ namespace benchmark_generate
 			pstl::wrap_timing(state, std::forward<Function>(F), execution_policy, input, generator);
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input));
+		pstl::add_global_custom_statistics(state, input);
 	}
 } // namespace benchmark_generate

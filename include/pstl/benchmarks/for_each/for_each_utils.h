@@ -46,7 +46,7 @@ namespace benchmark_for_each
 			                  [=](auto & elem) { kernel(elem, its); });
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, data));
+		pstl::add_global_custom_statistics(state, data);
 
 		state.counters["kernel_its"] = static_cast<double>(its);
 	}

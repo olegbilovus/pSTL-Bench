@@ -14,11 +14,13 @@
 #include "pstl/utils/input_gen.h"
 #include "pstl/utils/timing.h"
 
+extern int GLOBAL_NUM_THREADS;
+
 #define PSTL_BENCH_CUSTOM_STATISTICS                                                                                   \
 	ComputeStatistics("max", [](const auto & v) -> double { return *(std::max_element(std::begin(v), std::end(v))); }) \
-	    -> ComputeStatistics("min", [](const auto & v) -> double {                                                     \
-		    return *(std::min_element(std::begin(v), std::end(v)));                                                    \
-	    }) -> UseManualTime()
+	    ->ComputeStatistics("min",                                                                                     \
+	                        [](const auto & v) -> double { return *(std::min_element(std::begin(v), std::end(v))); })  \
+	    ->UseManualTime()
 
 #define PSTL_BENCH_BENCHMARK_PARAMETERS                               \
 	PSTL_BENCH_CUSTOM_STATISTICS->RangeMultiplier(2)                  \
@@ -57,6 +59,23 @@ namespace pstl
 		(accumulate_bytes(containers), ...);
 
 		return bytes * state.iterations();
+	}
+
+	/**
+	 * Add custom statistics to every benchmark
+	 * @param state the benchmark state
+	 * @param containers the containers used by the benchmark
+	 */
+	static void add_global_custom_statistics(::benchmark::State & state, const auto &... containers)
+	{
+		// Add computed bytes to the benchmark
+		const auto bytes = computed_bytes(state, containers...);
+		state.SetBytesProcessed(bytes);
+
+#ifndef PSTL_BENCH_USE_GPU
+		// Add the number of threads to the benchmark
+		state.counters.insert({ "used_threads", GLOBAL_NUM_THREADS });
+#endif
 	}
 
 	/**

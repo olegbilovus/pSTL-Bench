@@ -31,6 +31,6 @@ namespace benchmark_adjacent_difference
 			assert(output.back() == solution);
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input, output));
+		pstl::add_global_custom_statistics(state, input, output);
 	}
 } // namespace benchmark_adjacent_difference

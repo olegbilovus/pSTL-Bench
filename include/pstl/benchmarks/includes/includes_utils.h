@@ -28,6 +28,6 @@ namespace benchmark_includes
 			assert(pstl::are_equivalent(output, solution));
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input, subset));
+		pstl::add_global_custom_statistics(state, input, subset);
 	}
 } // namespace benchmark_includes

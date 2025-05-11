@@ -27,6 +27,6 @@ namespace benchmark_search
 			assert(pstl::are_equivalent(result, output));
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, data1, data2));
+		pstl::add_global_custom_statistics(state, data1, data2);
 	}
 } // namespace benchmark_search

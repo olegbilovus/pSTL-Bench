@@ -28,6 +28,6 @@ namespace benchmark_partial_sort
 			assert((std::is_sorted(input.begin(), middle)));
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input));
+		pstl::add_global_custom_statistics(state, input);
 	}
 } // namespace benchmark_partial_sort

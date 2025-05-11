@@ -31,6 +31,6 @@ namespace benchmark_exclusive_scan
 			assert(pstl::are_equivalent(output.back(), solution));
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input, output));
+		pstl::add_global_custom_statistics(state, input, output);
 	}
 } // namespace benchmark_exclusive_scan

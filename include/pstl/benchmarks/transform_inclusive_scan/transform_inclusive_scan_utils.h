@@ -33,6 +33,6 @@ namespace benchmark_transform_inclusive_scan
 			assert(pstl::are_equivalent(result, solution));
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input));
+		pstl::add_global_custom_statistics(state, input);
 	}
 } // namespace benchmark_transform_inclusive_scan

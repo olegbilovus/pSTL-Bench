@@ -22,6 +22,6 @@ namespace benchmark_fill
 			pstl::wrap_timing(state, std::forward<Function>(F), execution_policy, input, pstl::elem_t{});
 		}
 
-		state.SetBytesProcessed(pstl::computed_bytes(state, input));
+		pstl::add_global_custom_statistics(state, input);
 	}
 } // namespace benchmark_fill
