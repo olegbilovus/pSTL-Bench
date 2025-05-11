@@ -8,6 +8,13 @@ add_compile_definitions(PSTL_BENCH_USE_ONEDPL)
 
 add_compile_definitions(PSTL_BENCH_BACKEND="ONEDPL")
 
+# Use TBB as the backend for oneDPL
+message(STATUS "Using TBB as the backend for oneDPL")
+set(ONEDPL_BACKEND tbb)
+set(ONEDPL_PAR_BACKEND tbb)
+add_compile_definitions(PSTL_BENCH_USE_TBB)
+
+
 # Find Intel oneAPI DPC++ Library (oneDPL)
 find_package(oneDPL REQUIRED)
 
