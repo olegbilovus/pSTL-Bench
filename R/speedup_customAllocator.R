@@ -3,13 +3,15 @@ library(pacman)
 pacman::p_load(rio, ggplot2, tidyverse)
 theme_set(theme_bw())
 
-csv_default_allocator <- "csv_data/defaultAllocator.csv"
-csv_custom_allocator <- "csv_data/customAllocator.csv"
-plot_title <- NULL
+source("utils.R")
 
-# Import the data
-data_default <- import(csv_default_allocator)
-data_custom <- import(csv_custom_allocator)
+json_dir_custom_allocator <- "json_data/speedup_customAllocator/custom"
+data_custom <- from_json_dir_data(json_dir_custom_allocator)
+
+json_dir_default_allocator <- "json_data/speedup_customAllocator/default"
+data_default <- from_json_dir_data(json_dir_default_allocator)
+
+plot_title <- NULL
 
 # Combine the data
 data <- bind_rows(
@@ -17,14 +19,10 @@ data <- bind_rows(
   data_custom %>% mutate(allocator = "custom")
 )
 
-# Filter out rows where an error occurred
-data <- data %>%
-  filter(is.na(error_occurred) | error_occurred == FALSE)
-
 # Extract the number of elements from the 'name' column
 data <- data %>%
   mutate(
-    elements = as.integer(str_extract(name, "\\d+")),
+    elements = get_elements(name),
   )
 
 # Filter only the rows with 2^30 elements
@@ -34,13 +32,13 @@ data <- data %>%
 # extract the algorithm name from the 'name' column
 data <- data %>%
   mutate(
-    algorithm = str_split_fixed(str_split_fixed(name, "/", 3)[, 2], "::", 2)[, 2],
+    algorithm = get_algorithm(name),
   )
 
 # Extract the name for the plot
 data <- data %>%
   mutate(
-    name = str_split_fixed(name, "/", 2)[, 1],
+    name = get_name(name),
   )
 
 # Select relevant columns
@@ -52,12 +50,20 @@ data <- data %>%
   mutate(name = factor(name, levels = unique(name)))
 
 print(data)
-
 # Ensure all combinations of algorithm and name are present, filling missing values with NA
 speedup_data <- data %>%
   complete(algorithm, name, fill = list(real_time = NA)) %>% # Add missing combinations with NA
   spread(key = allocator, value = real_time, fill = NA) %>% # Reshape data to have separate columns for default and custom
-  mutate(speedup = ifelse(is.na(default) | is.na(custom), NA, default / custom)) # Calculate speedup, set NA if data is missing
+  mutate(
+    speedup = ifelse(is.na(default) | is.na(custom), NA, default / custom),
+    algorithm = factor(algorithm, levels = unique(algorithm)), # Ensure the algorithm column is a factor
+  ) # Calculate speedup, set NA if data is missing
+
+speedup_data <- speedup_data %>%
+  mutate(
+    speedup_label = ifelse(is.na(speedup), "N/A", sprintf("%.2f", speedup)), # Create a label for speedup
+    speedup = ifelse(is.na(speedup), 0, speedup) # Replace NA with 0 for plotting
+  )
 
 # Print the speedup data
 print(speedup_data)
@@ -67,7 +73,7 @@ p <- ggplot(speedup_data, aes(x = algorithm, y = speedup, fill = name)) +
   geom_bar(stat = "identity", position = "dodge", color = "black") + # Create grouped bars for each name
   geom_hline(yintercept = 1.0, linetype = "dashed", color = "black", linewidth = 0.7) + # Add a horizontal line at y = 1.0
   geom_text(
-    aes(label = round(speedup, 2)),
+    aes(label = speedup_label),
     position = position_dodge(width = 0.9), # Position text to match the bars
     vjust = 0, # Center the text on the bar
     hjust = -0.2, # Place text above the bars
@@ -88,10 +94,10 @@ p <- ggplot(speedup_data, aes(x = algorithm, y = speedup, fill = name)) +
   labs(title = plot_title) +
   theme(
     panel.grid.minor = element_blank(), # Remove minor grid lines
-    panel.grid.major = element_line(color = "lightgray", linewidth = 0.25, linetype = "dashed"),
+    panel.grid.major = element_line(color = "grey", linewidth = 0.25, linetype = "dashed"),
     legend.position = "top", # Move the legend to the top of the chart
     legend.box = "horizontal", # Arrange legend items horizontally
-    legend.background = element_rect(fill = "white", color = "black"), # Add a border around the legend
+    legend.background = element_rect(fill = "white", color = scales::alpha("black", 0.5)), # Add a border around the legend
     legend.margin = margin(5, 5, 5, 5), # Add some padding inside the legend box
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
     plot.title = element_text(hjust = 0.5)

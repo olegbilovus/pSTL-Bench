@@ -886,3 +886,5 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+R/json_data/

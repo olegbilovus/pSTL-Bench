@@ -3,36 +3,28 @@ library(pacman)
 pacman::p_load(rio, ggplot2, tidyverse, lemon)
 theme_set(theme_bw())
 
+source("utils.R")
 
-csv_file_path <- "csv_data/problemSize_time.csv"
+json_dir <- "json_data/problemSize_time/for_each-k1000"
+data <- from_json_dir_data(json_dir)
+
 plot_title <- NULL
-
-# Import the data
-data <- import(csv_file_path)
-
-# Filter out rows where an error occurred
-data <- data %>%
-  filter(is.na(error_occurred) | error_occurred == FALSE)
 
 # Extract the number of elements from the 'name' column
 data <- data %>%
   mutate(
-    elements = as.integer(str_extract(name, "\\d+")),
+    elements = get_elements(name),
   )
 
 # Extract the name for the plot
 data <- data %>%
   mutate(
-    name = str_split_fixed(name, "/", 2)[, 1],
+    name = get_name(name),
   )
 
 # Select relevant columns
 data <- data %>%
   select(name, elements, real_time)
-
-# Order the data by name
-data <- data %>%
-  mutate(name = factor(name, levels = unique(name)))
 
 print(data)
 
@@ -65,8 +57,8 @@ p <- ggplot(data, aes(x = log2(elements), y = log10(real_time), color = name, sh
   labs(title = plot_title) +
   theme(
     panel.grid.minor = element_blank(), # Remove minor grid lines
-    panel.grid.major = element_line(color = "lightgray", linewidth = 0.25, linetype = "dashed"), # Minor grid lines
-    legend.background = element_rect(fill = scales::alpha("white", 0.75), color = "black"), # Add a border around the legend
+    panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"), # Minor grid lines
+    legend.background = element_rect(fill = scales::alpha("white", 0.75), color = scales::alpha("black", 0.5)), # Add a border around the legend
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5), # Add a border around the plot
     plot.title = element_text(hjust = 0.5) # Center the title
   )
