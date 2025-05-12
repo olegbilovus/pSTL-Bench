@@ -26,6 +26,10 @@ data <- data %>%
 data <- data %>%
   select(name, elements, real_time)
 
+# Order the data by name
+data <- data %>%
+  mutate(name = factor(name, levels = unique(name)))
+
 print(data)
 
 # Dynamically generate shapes based on the number of unique names
