@@ -41,7 +41,6 @@ data <- data %>%
     name = get_name(name),
   )
 
-# Select relevant columns
 data <- data %>%
   select(name, elements, real_time, algorithm, allocator)
 
@@ -57,16 +56,14 @@ speedup_data <- data %>%
   mutate(
     speedup = ifelse(is.na(default) | is.na(custom), NA, default / custom),
     algorithm = factor(algorithm, levels = unique(algorithm)), # Ensure the algorithm column is a factor
-  ) # Calculate speedup, set NA if data is missing
+  )
 
+# Calculate speedup, set NA if data is missing
 speedup_data <- speedup_data %>%
   mutate(
     speedup_label = ifelse(is.na(speedup), "N/A", sprintf("%.2f", speedup)), # Create a label for speedup
     speedup = ifelse(is.na(speedup), 0, speedup) # Replace NA with 0 for plotting
   )
-
-# Print the speedup data
-print(speedup_data)
 
 # Create a bar plot for the aggregated speedup
 p <- ggplot(speedup_data, aes(x = algorithm, y = speedup, fill = name)) +
@@ -93,14 +90,14 @@ p <- ggplot(speedup_data, aes(x = algorithm, y = speedup, fill = name)) +
   ) +
   labs(title = plot_title) +
   theme(
-    panel.grid.minor = element_blank(), # Remove minor grid lines
+    panel.grid.minor = element_blank(),
     panel.grid.major = element_line(color = "grey", linewidth = 0.25, linetype = "dashed"),
     legend.position = "top", # Move the legend to the top of the chart
     legend.box = "horizontal", # Arrange legend items horizontally
     legend.background = element_rect(fill = "white", color = scales::alpha("black", 0.5)), # Add a border around the legend
     legend.margin = margin(5, 5, 5, 5), # Add some padding inside the legend box
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
-    plot.title = element_text(hjust = 0.5)
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5), # Add a border around the plot
+    plot.title = element_text(hjust = 0.5) # Center the title
   )
 
 p

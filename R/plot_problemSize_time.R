@@ -22,7 +22,6 @@ data <- data %>%
     name = get_name(name),
   )
 
-# Select relevant columns
 data <- data %>%
   select(name, elements, real_time)
 
@@ -30,13 +29,7 @@ data <- data %>%
 data <- data %>%
   mutate(name = factor(name, levels = unique(name)))
 
-print(data)
-
-# Dynamically generate shapes based on the number of unique names
-unique_names <- unique(data$name)
-num_unique_names <- length(unique_names)
-
-shape_values <- c(15:25, 0:20)[1:num_unique_names]
+shape_values <- get_shapes(data$name)
 
 
 # Plot the data with log2 for x-axis and log10 for y-axis, with custom labels
@@ -56,12 +49,12 @@ p <- ggplot(data, aes(x = log2(elements), y = log10(real_time), color = name, sh
   scale_color_discrete(name = NULL) + # Remove the legend title for color
   scale_shape_manual(
     name = NULL, # Remove the legend title for shape
-    values = shape_values, # Dynamically assign shapes
+    values = shape_values,
   ) +
   labs(title = plot_title) +
   theme(
-    panel.grid.minor = element_blank(), # Remove minor grid lines
-    panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"), # Minor grid lines
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"),
     legend.background = element_rect(fill = scales::alpha("white", 0.75), color = scales::alpha("black", 0.5)), # Add a border around the legend
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5), # Add a border around the plot
     plot.title = element_text(hjust = 0.5) # Center the title

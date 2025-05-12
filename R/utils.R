@@ -1,8 +1,8 @@
 library(jsonlite)
 library(readr)
 
-# Function to import JSON data from a directory
 from_json_dir_data <- function(json_dir) {
+# Function to import JSON data from a directory
   json_files <- list.files(json_dir, pattern = "\\.json$", full.names = TRUE, recursive = TRUE)
   data_list <- list()
 
@@ -38,4 +38,14 @@ get_algorithm <- function(name) {
   # Extract the algorithm name from the 'name' column
   algorithm <- str_split_fixed(str_split_fixed(name, "/", 3)[, 2], "::", 2)[, 2]
   return(algorithm)
+}
+
+get_shapes <- function(data) {
+  # Dynamically generate shapes based on the number of unique names
+  unique_data <- unique(data)
+  num_unique_data <- length(unique_data)
+
+  shape_values <- c(15:25, 0:20)[1:num_unique_data]
+
+  return(shape_values)
 }

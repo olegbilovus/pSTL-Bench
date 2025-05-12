@@ -32,44 +32,38 @@ if (!SEQ_NAME %in% data$name) {
   stop(paste("Error: SEQ_NAME", SEQ_NAME, "not found in the data."))
 }
 seq_data <- data %>%
-  filter(name == SEQ_NAME) %>% # Filter for SEQ_NAME
-  select(-used_threads) %>% # Remove the used_threads column
+  filter(name == SEQ_NAME) %>%
+  select(-used_threads) %>%
   mutate(
-    name = factor(name, levels = unique(name)), # Ensure the name column is a factor
+    name = factor(name, levels = unique(name)),
   ) %>%
-  select(name, real_time) # Select relevant columns
+  select(name, real_time)
 
 # Remove the SEQ_NAME from the data
 data <- data %>%
-  filter(name != SEQ_NAME) %>% # Exclude SEQ_NAME from the speedup calculation
+  filter(name != SEQ_NAME) %>%
   mutate(
-    name = factor(name, levels = unique(name)), # Ensure the name column is a factor
+    name = factor(name, levels = unique(name)),
   )
 
 # Select relevant columns
 data <- data %>%
   select(name, real_time, used_threads)
 
-# Order the data by number of threads
+# Order the data by name
 data <- data %>%
   mutate(name = factor(name, levels = unique(name)))
 
-print(data)
-
+# Calculate speedup
 speedup_data <- data %>%
   mutate(
-    speedup = seq_data$real_time / real_time, # Calculate speedup
+    speedup = seq_data$real_time / real_time,
   )
 
-# Dynamically generate shapes based on the number of unique names
-unique_names <- unique(data$name)
-num_unique_names <- length(unique_names)
-
-shape_values <- c(15:25, 0:20)[1:num_unique_names]
+shape_values <- get_shapes(speedup_data$name)
 
 min_threads <- min(speedup_data$used_threads)
 max_threads <- max(speedup_data$used_threads)
-
 max_speedup <- max(speedup_data$speedup)
 
 # Create a data frame for the ideal speedup line (y = x)
@@ -92,7 +86,7 @@ p <- ggplot(speedup_data, aes(x = used_threads, y = speedup, color = name, shape
   scale_color_discrete(name = NULL) + # Remove the legend title for color
   scale_shape_manual(
     name = NULL, # Remove the legend title for shape
-    values = shape_values, # Dynamically assign shapes
+    values = shape_values,
   ) +
   labs(
     title = plot_title,
@@ -100,7 +94,7 @@ p <- ggplot(speedup_data, aes(x = used_threads, y = speedup, color = name, shape
   ) +
   theme(
     panel.grid.minor = element_blank(), # Remove minor grid lines
-    panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"), # Minor grid lines
+    panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"),
     legend.background = element_rect(fill = scales::alpha("white", 0.75), color = scales::alpha("black", 0.5)), # Add a border around the legend
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5), # Add a border around the plot
     plot.title = element_text(hjust = 0.5) # Center the title
