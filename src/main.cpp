@@ -27,7 +27,7 @@ int main(int argc, char ** argv)
 	auto tbbThreadControl = init_tbb_thread_control();
 	GLOBAL_NUM_THREADS    = tbb::global_control::active_value(tbb::global_control::max_allowed_parallelism);
 	benchmark::AddCustomContext("tbb #threads", std::to_string(GLOBAL_NUM_THREADS));
-#elif defined(PSTL_BENCH_USE_GNU_PSTL)
+#elif defined(PSTL_BENCH_USE_GNU) || defined(PSTL_BENCH_USE_PSTL)
 	GLOBAL_NUM_THREADS = omp_get_max_threads();
 	benchmark::AddCustomContext("omp #threads", std::to_string(GLOBAL_NUM_THREADS));
 #elif defined(PSTL_BENCH_USE_HPX)
