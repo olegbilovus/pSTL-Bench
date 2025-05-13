@@ -1,109 +1,76 @@
-- name: Build CMake benchmarks
-  hosts: all
-
-  become: false
-  gather_facts: true
-  any_errors_fatal: false
-
-  pre_tasks:
-    - name: Load global variables from file
-      ansible.builtin.include_vars: "../global_vars.yml"
+- name: Create CMakes
+  tags:
+    - create_cmakes
+  block:
+    - name: "{{ item.1.key }}-k{{ item.0 }} default allocator double"
+      ansible.builtin.command:
+        cmd: >
+          cmake {{ cmake.release }}
+          {{ cmake.backend }}={{ item.1.value.build.backend }}
+          {{ cmake.compiler }}={{ item.1.value.build.compiler }}
+          {{ cmake.kit }}={{ item.0 }}
+          {{ cmake.data_type }}=double
+          {{ item.1.value.build.compiler_flags }}
+          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-double
+        chdir: "{{ root }}"
+      register: gnu_build
+      changed_when: gnu_build.rc == 0
       tags:
-        - always
+        - default_allocator
+        - double
 
-    - name: Load local variables from file
-      ansible.builtin.include_vars: "vars.yml"
+    - name: "{{ item.1.key }}-k{{ item.0 }} custom allocator double"
+      ansible.builtin.command:
+        cmd: >
+          cmake {{ cmake.release }}
+          {{ cmake.backend }}={{ item.1.value.build.backend }}
+          {{ cmake.compiler }}={{ item.1.value.build.compiler }}
+          {{ cmake.custom_allocator_on }}
+          {{ cmake.kit }}={{ item.0 }}
+          {{ cmake.data_type }}=double
+          {{ item.1.value.build.compiler_flags }}
+          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-double
+        chdir: "{{ root }}"
+      register: gnu_build
+      changed_when: gnu_build.rc == 0
+      when: item.1.value.build.custom_allocator
       tags:
-        - always
+        - custom_allocator
+        - double
 
-    - name: Ensure the git repository is cloned
-      ansible.builtin.git:
-        repo: "{{ git_repo }}"
-        dest: "{{ root }}"
-        force: true
+    - name: "{{ item.1.key }}-k{{ item.0 }} default allocator float"
+      ansible.builtin.command:
+        cmd: >
+          cmake {{ cmake.release }}
+          {{ cmake.backend }}={{ item.1.value.build.backend }}
+          {{ cmake.compiler }}={{ item.1.value.build.compiler }}
+          {{ cmake.kit }}={{ item.0 }}
+          {{ cmake.data_type }}=float
+          {{ item.1.value.build.compiler_flags }}
+          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-float
+        chdir: "{{ root }}"
+      register: gnu_build
+      changed_when: gnu_build.rc == 0
+      when: item.1.value.build.build_float
       tags:
-        - create_cmakes
-        - build_cmakes
+        - default_allocator
+        - float
 
-    - name: Ensure the builds directory exists
-      ansible.builtin.file:
-        path: "{{ builds_dir }}"
-        state: directory
-        mode: "0755"
+    - name: "{{ item.1.key }}-k{{ item.0 }} custom allocator float"
+      ansible.builtin.command:
+        cmd: >
+          cmake {{ cmake.release }}
+          {{ cmake.backend }}={{ item.1.value.build.backend }}
+          {{ cmake.compiler }}={{ item.1.value.build.compiler }}
+          {{ cmake.custom_allocator_on }}
+          {{ cmake.kit }}={{ item.0 }}
+          {{ cmake.data_type }}=float
+          {{ item.1.value.build.compiler_flags }}
+          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-float
+        chdir: "{{ root }}"
+      register: gnu_build
+      changed_when: gnu_build.rc == 0
+      when: item.1.value.build.build_float and item.1.value.build.custom_allocator
       tags:
-        - create_cmakes
-        - build_cmakes
-
-    - name: "Apt update"
-      become: true
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 86400 # 1 day
-      tags:
-        - create_cmakes
-        - build_cmakes
-
-    - name: "Install dependencies"
-      become: true
-      ansible.builtin.apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - build-essential
-        - cmake
-        - libboost-all-dev
-        - numactl
-        - libnuma-dev
-        - parallel
-        - librust-tcmalloc-dev
-        - hwloc
-      tags:
-        - create_cmakes
-        - build_cmakes
-
-  tasks:
-    - name: Create CMakes
-      ansible.builtin.include_tasks: "tasks/cmake_create.yml"
-      loop: "{{ kits | product(backends | dict2items) | list }}"
-      loop_control:
-        label: "{{ item.1.key }}-k{{item.0}}"
-      tags:
-        - create_cmakes
-
-    - name: Build CMake
-      tags:
-        - build_cmakes
-      block:
-        - name: Get list of CMake directories
-          ansible.builtin.find:
-            paths: "{{ builds_dir }}"
-            file_type: directory
-          register: cmake_dirs
-
-        - name: Set CMake directory basenames as a variable
-          ansible.builtin.set_fact:
-            cmake_dir_basenames: "{{ cmake_dirs.files | map(attribute='path') | map('basename') | list }}"
-
-        - name: Print CMake directories
-          ansible.builtin.debug:
-            var: cmake_dir_basenames
-
-        - name: Build CMake benchmarks
-          ansible.builtin.command:
-            cmd: cmake --build {{ item }} --target {{ project_name }}
-            chdir: "{{ builds_dir }}"
-          register: cmake_build
-          changed_when: cmake_build.rc == 0
-          loop: "{{ cmake_dir_basenames }}"
-          loop_control:
-            label: "{{ item }}"
-
-    # use --tags=debug when running the playbook to see the debug output
-    - name: Print create CMakes commands
-      ansible.builtin.include_tasks: "tasks/debug_cmake.yml"
-      loop: "{{ kits | product(backends | dict2items) | list }}"
-      loop_control:
-        label: "{{ item.1.key }}-k{{item.0}}"
-      tags:
-        - never
-        - debug
+        - custom_allocator
+        - float
