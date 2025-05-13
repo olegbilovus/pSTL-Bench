@@ -1,9 +1,6 @@
 - name: Build CMake benchmarks
   hosts: all
 
-  vars:
-    env: "test"
-
   become: false
   gather_facts: true
   any_errors_fatal: false
@@ -19,24 +16,10 @@
       tags:
         - always
 
-    - name: Set the root directory to dev
-      ansible.builtin.set_fact:
-        root: "{{ ansible_env.HOME }}/{{ project_name }}.dev"
-      when: env == 'dev'
-      tags:
-        - always
-
-    - name: Print the root directory
-      ansible.builtin.debug:
-        msg: "Root directory: {{ root }}"
-      tags:
-        - always
-
     - name: Ensure the git repository is cloned
       ansible.builtin.git:
         repo: "{{ git_repo }}"
         dest: "{{ root }}"
-        version: "main"
         force: true
       tags:
         - create_cmakes
