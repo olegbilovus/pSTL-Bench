@@ -1,0 +1,25 @@
+cmake:
+  release: "-DCMAKE_BUILD_TYPE=Release"
+  backend: "-DPSTL_BENCH_BACKEND"
+  compiler: "-DCMAKE_CXX_COMPILER"
+  kit: "-DPSTL_BENCH_DEFAULT_FOR_EACH_KERNEL_ITS"
+  custom_allocator_on: "-DPSTL_BENCH_USE_PAR_ALLOC=ON"
+  data_type: "-DPSTL_BENCH_DATA_TYPE"
+
+kits: [1, 1000]
+
+backends:
+  gccgnu:
+    build:
+      compiler_flags: ""
+      backend: "GNU"
+      compiler: "g++"
+      custom_allocator: true
+      build_float: true
+#  gcchpx:
+#    build:
+#      compiler_flags: ""
+#      backend: "HPX"
+#      compiler: "g++"
+#      custom_allocator: false
+#      build_float: false

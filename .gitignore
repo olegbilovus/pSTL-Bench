@@ -888,3 +888,6 @@ po/*~
 rsconnect/
 
 R/json_data/
+
+# Ansible 
+.ansible/

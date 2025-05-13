@@ -1,0 +1,65 @@
+- name: Debug the CMake command
+  tags:
+    - never
+    - debug
+  block:
+    - name: "{{ item.1.key }}-k{{ item.0 }} default allocator double"
+      ansible.builtin.debug:
+        msg: >
+          cmake {{ cmake.release }}
+          {{ cmake.backend }}={{ item.1.value.build.backend }}
+          {{ cmake.compiler }}={{ item.1.value.build.compiler }}
+          {{ cmake.kit }}={{ item.0 }}
+          {{ cmake.data_type }}=double
+          {{ item.1.value.build.compiler_flags }}
+          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-double
+      tags:
+        - default_allocator
+        - double
+
+    - name: "{{ item.1.key }}-k{{ item.0 }} custom allocator double"
+      ansible.builtin.debug:
+        msg: >
+          cmake {{ cmake.release }}
+          {{ cmake.backend }}={{ item.1.value.build.backend }}
+          {{ cmake.compiler }}={{ item.1.value.build.compiler }}
+          {{ cmake.custom_allocator_on }}
+          {{ cmake.kit }}={{ item.0 }}
+          {{ cmake.data_type }}=double
+          {{ item.1.value.build.compiler_flags }}
+          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-double
+      when: item.1.value.build.custom_allocator
+      tags:
+        - custom_allocator
+        - double
+
+    - name: "{{ item.1.key }}-k{{ item.0 }} default allocator float"
+      ansible.builtin.debug:
+        msg: >
+          cmake {{ cmake.release }}
+          {{ cmake.backend }}={{ item.1.value.build.backend }}
+          {{ cmake.compiler }}={{ item.1.value.build.compiler }}
+          {{ cmake.kit }}={{ item.0 }}
+          {{ cmake.data_type }}=float
+          {{ item.1.value.build.compiler_flags }}
+          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-float
+      when: item.1.value.build.build_float
+      tags:
+        - default_allocator
+        - float
+
+    - name: "{{ item.1.key }}-k{{ item.0 }} custom allocator float"
+      ansible.builtin.debug:
+        msg: >
+          cmake {{ cmake.release }}
+          {{ cmake.backend }}={{ item.1.value.build.backend }}
+          {{ cmake.compiler }}={{ item.1.value.build.compiler }}
+          {{ cmake.custom_allocator_on }}
+          {{ cmake.kit }}={{ item.0 }}
+          {{ cmake.data_type }}=float
+          {{ item.1.value.build.compiler_flags }}
+          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-float
+      when: item.1.value.build.build_float and item.1.value.build.custom_allocator
+      tags:
+        - custom_allocator
+        - float
