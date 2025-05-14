@@ -1,65 +1,82 @@
-- name: Debug the CMake command
+- name: Print CMake create command
   tags:
     - never
     - debug
   block:
-    - name: "{{ item.1.key }}-k{{ item.0 }} default allocator double"
+    - name: "Create default allocator double"
       ansible.builtin.debug:
         msg: >
+          {{ item.1.value.pre_cmd }}
           cmake {{ cmake.release }}
           {{ cmake.backend }}={{ item.1.value.build.backend }}
           {{ cmake.compiler }}={{ item.1.value.build.compiler }}
           {{ cmake.kit }}={{ item.0 }}
           {{ cmake.data_type }}=double
-          {{ item.1.value.build.compiler_flags }}
+          {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
           -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-double
+      loop: "{{ cmake_builds }}"
+      loop_control:
+        label: "{{ item.1.key }}-k{{ item.0 }}"
+      when: item.1.key not in skip_backends
       tags:
         - default_allocator
         - double
 
-    - name: "{{ item.1.key }}-k{{ item.0 }} custom allocator double"
+    - name: "Create custom allocator double"
       ansible.builtin.debug:
         msg: >
+          {{ item.1.value.pre_cmd }}
           cmake {{ cmake.release }}
           {{ cmake.backend }}={{ item.1.value.build.backend }}
           {{ cmake.compiler }}={{ item.1.value.build.compiler }}
           {{ cmake.custom_allocator_on }}
           {{ cmake.kit }}={{ item.0 }}
           {{ cmake.data_type }}=double
-          {{ item.1.value.build.compiler_flags }}
+          {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
           -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-double
-      when: item.1.value.build.custom_allocator
+      loop: "{{ cmake_builds }}"
+      loop_control:
+        label: "{{ item.1.key }}-k{{ item.0 }}"
+      when: item.1.key not in skip_backends and item.1.value.build.custom_allocator
       tags:
         - custom_allocator
         - double
 
-    - name: "{{ item.1.key }}-k{{ item.0 }} default allocator float"
+    - name: "Create default allocator float"
       ansible.builtin.debug:
         msg: >
+          {{ item.1.value.pre_cmd }}
           cmake {{ cmake.release }}
           {{ cmake.backend }}={{ item.1.value.build.backend }}
           {{ cmake.compiler }}={{ item.1.value.build.compiler }}
           {{ cmake.kit }}={{ item.0 }}
           {{ cmake.data_type }}=float
-          {{ item.1.value.build.compiler_flags }}
+          {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
           -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-float
-      when: item.1.value.build.build_float
+      loop: "{{ cmake_builds }}"
+      loop_control:
+        label: "{{ item.1.key }}-k{{ item.0 }}"
+      when: item.1.key not in skip_backends and item.1.value.build.build_float
       tags:
         - default_allocator
         - float
 
-    - name: "{{ item.1.key }}-k{{ item.0 }} custom allocator float"
+    - name: "Create custom allocator float"
       ansible.builtin.debug:
         msg: >
+          {{ item.1.value.pre_cmd }}
           cmake {{ cmake.release }}
           {{ cmake.backend }}={{ item.1.value.build.backend }}
           {{ cmake.compiler }}={{ item.1.value.build.compiler }}
           {{ cmake.custom_allocator_on }}
           {{ cmake.kit }}={{ item.0 }}
           {{ cmake.data_type }}=float
-          {{ item.1.value.build.compiler_flags }}
+          {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
           -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-float
-      when: item.1.value.build.build_float and item.1.value.build.custom_allocator
+      loop: "{{ cmake_builds }}"
+      loop_control:
+        label: "{{ item.1.key }}-k{{ item.0 }}"
+      when: item.1.key not in skip_backends and item.1.value.build.build_float and item.1.value.build.custom_allocator
       tags:
         - custom_allocator
         - float

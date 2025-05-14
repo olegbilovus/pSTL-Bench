@@ -3,6 +3,7 @@
 
   vars:
     env: "test"
+    skip_backends: []
 
   become: false
   gather_facts: true
@@ -16,6 +17,18 @@
 
     - name: Load local variables from file
       ansible.builtin.include_vars: "vars.yml"
+      tags:
+        - always
+
+    - name: Skipping the build for the following backends
+      ansible.builtin.debug:
+        msg: "{{ skip_backends }}"
+      tags:
+        - always
+
+    - name: Set fact for available cmake builds
+      ansible.builtin.set_fact:
+        cmake_builds: "{{ kits | product(backends | dict2items) | list }}"
       tags:
         - always
 
@@ -81,46 +94,24 @@
   tasks:
     - name: Create CMakes
       ansible.builtin.include_tasks: "tasks/cmake_create.yml"
-      loop: "{{ kits | product(backends | dict2items) | list }}"
-      loop_control:
-        label: "{{ item.1.key }}-k{{item.0}}"
       tags:
         - create_cmakes
 
-    - name: Build CMake
+    - name: Build CMakes
+      ansible.builtin.include_tasks: "tasks/cmake_build.yml"
       tags:
         - build_cmakes
-      block:
-        - name: Get list of CMake directories
-          ansible.builtin.find:
-            paths: "{{ builds_dir }}"
-            file_type: directory
-          register: cmake_dirs
-
-        - name: Set CMake directory basenames as a variable
-          ansible.builtin.set_fact:
-            cmake_dir_basenames: "{{ cmake_dirs.files | map(attribute='path') | map('basename') | list }}"
-
-        - name: Print CMake directories
-          ansible.builtin.debug:
-            var: cmake_dir_basenames
-
-        - name: Build CMake benchmarks
-          ansible.builtin.command:
-            cmd: cmake --build {{ item }} --target {{ project_name }}
-            chdir: "{{ builds_dir }}"
-          register: cmake_build
-          changed_when: cmake_build.rc == 0
-          loop: "{{ cmake_dir_basenames }}"
-          loop_control:
-            label: "{{ item }}"
 
     # use --tags=debug when running the playbook to see the debug output
     - name: Print create CMakes commands
-      ansible.builtin.include_tasks: "tasks/debug_cmake.yml"
-      loop: "{{ kits | product(backends | dict2items) | list }}"
-      loop_control:
-        label: "{{ item.1.key }}-k{{item.0}}"
+      ansible.builtin.include_tasks: "tasks/debug/debug_cmake_create.yml"
+      tags:
+        - never
+        - debug
+
+      # use --tags=debug when running the playbook to see the debug output
+    - name: Print build CMakes commands
+      ansible.builtin.include_tasks: "tasks/debug/debug_cmake_build.yml"
       tags:
         - never
         - debug

@@ -2,24 +2,45 @@ cmake:
   release: "-DCMAKE_BUILD_TYPE=Release"
   backend: "-DPSTL_BENCH_BACKEND"
   compiler: "-DCMAKE_CXX_COMPILER"
+  compiler_flags: "-DCMAKE_CXX_FLAGS"
   kit: "-DPSTL_BENCH_DEFAULT_FOR_EACH_KERNEL_ITS"
   custom_allocator_on: "-DPSTL_BENCH_USE_PAR_ALLOC=ON"
   data_type: "-DPSTL_BENCH_DATA_TYPE"
 
 kits: [1, 1000]
 
+path_bashrc: "{{ ansible_env.HOME }}/.bashrc"
+
 backends:
   gccgnu:
+    pre_cmd: ". {{ path_bashrc }} &&"
     build:
       compiler_flags: ""
       backend: "GNU"
       compiler: "g++"
       custom_allocator: true
       build_float: true
-#  gcchpx:
-#    build:
-#      compiler_flags: ""
-#      backend: "HPX"
-#      compiler: "g++"
-#      custom_allocator: false
-#      build_float: false
+  icpxtbb:
+    pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
+    build:
+      compiler_flags: ""
+      backend: "TBB"
+      compiler: "icpx"
+      custom_allocator: true
+      build_float: false
+  onedplcpu:
+    pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
+    build:
+      compiler_flags: "-fsycl -fsycl-targets=spir64_x86_64" # select the target architecture
+      backend: "ONEDPL_CPU"
+      compiler: "icpx"
+      custom_allocator: true
+      build_float: true
+  onedplgpu:
+    pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
+    build:
+      compiler_flags: "-fsycl -fsycl-targets=nvptx64-nvidia-cuda" # select the target architecture
+      backend: "ONEDPL_GPU"
+      compiler: "icpx"
+      custom_allocator: false
+      build_float: true

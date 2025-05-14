@@ -1,0 +1,60 @@
+- name: Print CMake build commands
+  tags:
+    - never
+    - debug
+  block:
+    - name: "Build default allocator double"
+      ansible.builtin.debug:
+        msg: >
+          {{ item.1.value.pre_cmd }}
+          cmake --build {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-double
+          --target {{ project_name }}
+      loop: "{{ cmake_builds }}"
+      loop_control:
+        label: "{{ item.1.key }}-k{{ item.0 }}"
+      when: item.1.key not in skip_backends
+      tags:
+        - default_allocator
+        - double
+
+    - name: "Build custom allocator double"
+      ansible.builtin.debug:
+        msg: >
+          {{ item.1.value.pre_cmd }}
+          cmake --build {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-double
+          --target {{ project_name }}
+      loop: "{{ cmake_builds }}"
+      loop_control:
+        label: "{{ item.1.key }}-k{{ item.0 }}"
+      when: item.1.key not in skip_backends and item.1.value.build.custom_allocator
+      tags:
+        - custom_allocator
+        - double
+
+    - name: "Build default allocator float"
+      ansible.builtin.debug:
+        msg: >
+          {{ item.1.value.pre_cmd }}
+          cmake --build {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-float
+          --target {{ project_name }}
+      loop: "{{ cmake_builds }}"
+      loop_control:
+        label: "{{ item.1.key }}-k{{ item.0 }}"
+      when: item.1.key not in skip_backends and item.1.value.build.build_float
+      tags:
+        - default_allocator
+        - float
+
+    - name: "Build custom allocator float"
+      ansible.builtin.debug:
+        msg: >
+          {{ item.1.value.pre_cmd }}
+          cmake --build {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-float
+          --target {{ project_name }}
+      loop: "{{ cmake_builds }}"
+      loop_control:
+        label: "{{ item.1.key }}-k{{ item.0 }}"
+      when: item.1.key not in skip_backends and item.1.value.build.build_float and item.1.value.build.custom_allocator
+      tags:
+        - custom_allocator
+        - float
