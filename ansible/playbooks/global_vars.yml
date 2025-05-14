@@ -2,3 +2,72 @@ project_name: "pSTL-Bench"
 git_repo: "https://github.com/olegbilovus/{{ project_name }}"
 root: "{{ ansible_env.HOME }}/{{ project_name }}"
 builds_dir: "{{ root }}/builds"
+
+# Backends
+path_bashrc: "{{ ansible_env.HOME }}/.bashrc"
+
+backends:
+  gccgnu:
+    pre_cmd: ". {{ path_bashrc }} &&"
+    build:
+      compiler_flags: ""
+      backend: "GNU"
+      compiler: "g++"
+      custom_allocator: true
+      build_float: true
+  gcchpx:
+    pre_cmd: ". {{ path_bashrc }} &&"
+    build:
+      compiler_flags: ""
+      backend: "HPX"
+      compiler: "g++"
+      custom_allocator: false
+      build_float: false
+  gcctbb:
+    pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
+    build:
+      compiler_flags: ""
+      backend: "TBB"
+      compiler: "g++"
+      custom_allocator: true
+      build_float: false
+  icpxtbb:
+    pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
+    build:
+      compiler_flags: ""
+      backend: "TBB"
+      compiler: "icpx"
+      custom_allocator: true
+      build_float: false
+  nvccuda:
+    pre_cmd: ". {{ path_bashrc }} &&"
+    build:
+      compiler_flags: ""
+      backend: "NVHPC_CUDA"
+      compiler: "nvc++"
+      custom_allocator: false
+      build_float: true
+  nvcomp:
+    pre_cmd: ". {{ path_bashrc }} &&"
+    build:
+      compiler_flags: ""
+      backend: "NVHPC_OMP"
+      compiler: "nvc++"
+      custom_allocator: true
+      build_float: true
+  onedplcpu:
+    pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
+    build:
+      compiler_flags: "-fsycl -fsycl-targets=spir64_x86_64" # select the target architecture
+      backend: "ONEDPL_CPU"
+      compiler: "icpx"
+      custom_allocator: true
+      build_float: true
+  onedplgpu:
+    pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
+    build:
+      compiler_flags: "-fsycl -fsycl-targets=nvptx64-nvidia-cuda" # select the target architecture
+      backend: "ONEDPL_GPU"
+      compiler: "icpx"
+      custom_allocator: false
+      build_float: true

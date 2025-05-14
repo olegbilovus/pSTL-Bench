@@ -23,6 +23,7 @@
     - name: Skipping the build for the following backends
       ansible.builtin.debug:
         msg: "{{ skip_backends }}"
+      when: skip_backends | length > 0
       tags:
         - always
 
