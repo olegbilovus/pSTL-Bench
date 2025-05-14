@@ -64,7 +64,7 @@
         - create_cmakes
         - build_cmakes
 
-    - name: "Apt update"
+    - name: Apt update
       become: true
       ansible.builtin.apt:
         update_cache: true
@@ -73,7 +73,7 @@
         - create_cmakes
         - build_cmakes
 
-    - name: "Install dependencies"
+    - name: Install dependencies
       become: true
       ansible.builtin.apt:
         name: "{{ item }}"

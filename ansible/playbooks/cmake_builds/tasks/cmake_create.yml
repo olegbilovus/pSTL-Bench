@@ -2,7 +2,7 @@
   tags:
     - create_cmakes
   block:
-    - name: "create default allocator double"
+    - name: Create default allocator double
       ansible.builtin.shell:
         cmd: >
           {{ item.1.value.pre_cmd }}
@@ -24,7 +24,7 @@
         - default_allocator
         - double
 
-    - name: "create custom allocator double"
+    - name: Create custom allocator double
       ansible.builtin.shell:
         cmd: >
           {{ item.1.value.pre_cmd }}
@@ -47,7 +47,7 @@
         - custom_allocator
         - double
 
-    - name: "create default allocator float"
+    - name: Create default allocator float
       ansible.builtin.shell:
         cmd: >
           {{ item.1.value.pre_cmd }}
@@ -69,7 +69,7 @@
         - default_allocator
         - float
 
-    - name: "create custom allocator float"
+    - name: Create custom allocator float
       ansible.builtin.shell:
         cmd: >
           {{ item.1.value.pre_cmd }}

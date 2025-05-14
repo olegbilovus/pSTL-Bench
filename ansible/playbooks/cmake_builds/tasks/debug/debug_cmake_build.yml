@@ -3,7 +3,7 @@
     - never
     - debug
   block:
-    - name: "Build default allocator double"
+    - name: Build default allocator double
       ansible.builtin.debug:
         msg: >
           {{ item.1.value.pre_cmd }}
@@ -17,7 +17,7 @@
         - default_allocator
         - double
 
-    - name: "Build custom allocator double"
+    - name: Build custom allocator double
       ansible.builtin.debug:
         msg: >
           {{ item.1.value.pre_cmd }}
@@ -31,7 +31,7 @@
         - custom_allocator
         - double
 
-    - name: "Build default allocator float"
+    - name: Build default allocator float
       ansible.builtin.debug:
         msg: >
           {{ item.1.value.pre_cmd }}
@@ -45,7 +45,7 @@
         - default_allocator
         - float
 
-    - name: "Build custom allocator float"
+    - name: Build custom allocator float
       ansible.builtin.debug:
         msg: >
           {{ item.1.value.pre_cmd }}
