@@ -14,7 +14,7 @@
         label: "{{ item.1.key }}-k{{ item.0 }}"
       register: _res
       changed_when: _res.rc == 0
-      when: item.1.key not in skip_backends
+      when: item.1.key in selected_backends
       tags:
         - default_allocator
         - double
@@ -31,7 +31,7 @@
         label: "{{ item.1.key }}-k{{ item.0 }}"
       register: _res
       changed_when: _res.rc == 0
-      when: item.1.key not in skip_backends and item.1.value.build.custom_allocator
+      when: item.1.key in selected_backends and item.1.value.build.custom_allocator
       tags:
         - custom_allocator
         - double
@@ -48,7 +48,7 @@
         label: "{{ item.1.key }}-k{{ item.0 }}"
       register: _res
       changed_when: _res.rc == 0
-      when: item.1.key not in skip_backends and item.1.value.build.build_float
+      when: item.1.key in selected_backends and item.1.value.build.build_float
       tags:
         - default_allocator
         - float
@@ -65,7 +65,7 @@
         label: "{{ item.1.key }}-k{{ item.0 }}"
       register: _res
       changed_when: _res.rc == 0
-      when: item.1.key not in skip_backends and item.1.value.build.build_float and item.1.value.build.custom_allocator
+      when: item.1.key in selected_backends and item.1.value.build.build_float and item.1.value.build.custom_allocator
       tags:
         - custom_allocator
         - float

@@ -6,5 +6,3 @@ cmake:
   kit: "-DPSTL_BENCH_DEFAULT_FOR_EACH_KERNEL_ITS"
   custom_allocator_on: "-DPSTL_BENCH_USE_PAR_ALLOC=ON"
   data_type: "-DPSTL_BENCH_DATA_TYPE"
-
-kits: [1, 1000]

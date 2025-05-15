@@ -3,7 +3,7 @@
 
   vars:
     env: "test"
-    skip_backends: []
+    selected_backends: []
 
   become: false
   gather_facts: true
@@ -20,16 +20,28 @@
       tags:
         - always
 
-    - name: Skipping the build for the following backends
-      ansible.builtin.debug:
-        msg: "{{ skip_backends }}"
-      when: skip_backends | length > 0
+    - name: Check selected_backends is not empty
+      any_errors_fatal: true
+      ansible.builtin.fail:
+        msg: "No backends selected. Please set the 'selected_backends' variable. Available backends are: {{ backends.keys() | join(', ') }}"
+      when: selected_backends | length == 0
       tags:
         - always
 
-    - name: Set fact for available cmake builds
+    - name: Check selected backends exist
+      any_errors_fatal: true
+      ansible.builtin.fail:
+        msg: "Selected backend '{{ item }}' does not exist in the backends list. Available backends are: {{ backends.keys() | join(', ') }}"
+      loop: "{{ selected_backends }}"
+      loop_control:
+        label: "{{ item }}"
+      when: item not in backends.keys()
+      tags:
+        - always
+
+    - name: Set fact for selected cmake builds
       ansible.builtin.set_fact:
-        cmake_builds: "{{ kits | product(backends | dict2items) | list }}"
+        cmake_builds: "{{ kits | product(backends | dict2items) | list | selectattr('1.key', 'in', selected_backends) | list }}"
       tags:
         - always
 
