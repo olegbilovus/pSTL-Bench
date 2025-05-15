@@ -4,6 +4,7 @@
   vars:
     env: "test"
     selected_backends: []
+    kits: [1, 1000]
 
   become: false
   gather_facts: true
@@ -17,6 +18,19 @@
 
     - name: Load local variables from file
       ansible.builtin.include_vars: "vars.yml"
+      tags:
+        - always
+
+    - name: Set the root directory to dev
+      ansible.builtin.set_fact:
+        root: "{{ ansible_env.HOME }}/{{ project_name }}.dev"
+      when: env == 'dev'
+      tags:
+        - always
+
+    - name: Print the root directory
+      ansible.builtin.debug:
+        msg: "Root directory: {{ root }}"
       tags:
         - always
 
@@ -42,19 +56,6 @@
     - name: Set fact for selected cmake builds
       ansible.builtin.set_fact:
         cmake_builds: "{{ kits | product(backends | dict2items) | list | selectattr('1.key', 'in', selected_backends) | list }}"
-      tags:
-        - always
-
-    - name: Set the root directory to dev
-      ansible.builtin.set_fact:
-        root: "{{ ansible_env.HOME }}/{{ project_name }}.dev"
-      when: env == 'dev'
-      tags:
-        - always
-
-    - name: Print the root directory
-      ansible.builtin.debug:
-        msg: "Root directory: {{ root }}"
       tags:
         - always
 
