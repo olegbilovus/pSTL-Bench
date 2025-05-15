@@ -1,0 +1,94 @@
+- name: Print all problemSize_time commands
+  tags:
+    - never
+    - debug
+  block:
+    - name: Benchmark default allocator double
+      ansible.builtin.debug:
+        msg: >
+          {{ item.1.value.pre_cmd }}
+          {{ item.1.value.bench.env_select_threads + '=' + (threads | string)  if item.1.value.bench.env_select_threads else '' }}
+          {{ builds_dir }}/{{ item.1.key }}-k{{ kit }}-da-double/{{ project_name }}
+          {{ benchmark.filter }}='{{item.1.value.bench.filter_name + item.0}}'
+          {{ benchmark.min_time }}
+          {{ benchmark.format }}
+          {{ benchmark.out_format }}
+          {{ benchmark.out }}={{ item.1.key }}-da-double.json
+          {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
+      loop: "{{ cmake_benchs }}"
+      loop_control:
+        label: "{{item.0 }}/{{ item.1.key }}"
+      when:
+        - item.1.value.bench.problemSize_time.default_allocator
+        - item.1.key in selected_backends
+        - item.0 in selected_algorithms
+      tags:
+        - problemSize_time
+
+    - name: Benchmark custom allocator double
+      ansible.builtin.debug:
+        msg: >
+          {{ item.1.value.pre_cmd }}
+          {{ item.1.value.bench.env_select_threads + '=' + (threads | string)  if item.1.value.bench.env_select_threads else '' }}
+          {{ builds_dir }}/{{ item.1.key }}-k{{ kit }}-ca-double/{{ project_name }}
+          {{ benchmark.filter }}='{{item.1.value.bench.filter_name + item.0}}'
+          {{ benchmark.min_time }}
+          {{ benchmark.format }}
+          {{ benchmark.out_format }}
+          {{ benchmark.out }}={{ item.1.key }}-ca-double.json
+          {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
+      loop: "{{ cmake_benchs }}"
+      loop_control:
+        label: "{{item.0 }}/{{ item.1.key }}"
+      when:
+        - item.1.value.bench.problemSize_time.custom_allocator
+        - item.1.key in selected_backends
+        - item.0 in selected_algorithms
+      tags:
+        - problemSize_time
+
+    - name: Benchmark default allocator float
+      ansible.builtin.debug:
+        msg: >
+          {{ item.1.value.pre_cmd }}
+          {{ item.1.value.bench.env_select_threads + '=' + (threads | string)  if item.1.value.bench.env_select_threads else '' }}
+          {{ builds_dir }}/{{ item.1.key }}-k{{ kit }}-da-float/{{ project_name }}
+          {{ benchmark.filter }}='{{item.1.value.bench.filter_name + item.0}}'
+          {{ benchmark.min_time }}
+          {{ benchmark.format }}
+          {{ benchmark.out_format }}
+          {{ benchmark.out }}={{ item.1.key }}-da-float.json
+          {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
+      loop: "{{ cmake_benchs }}"
+      loop_control:
+        label: "{{item.0 }}/{{ item.1.key }}"
+      when:
+        - item.1.value.bench.problemSize_time.default_allocator
+        - item.1.value.bench.problemSize_time.float
+        - item.1.key in selected_backends
+        - item.0 in selected_algorithms
+      tags:
+        - problemSize_time
+
+    - name: Benchmark custom allocator float
+      ansible.builtin.debug:
+        msg: >
+          {{ item.1.value.pre_cmd }}
+          {{ item.1.value.bench.env_select_threads + '=' + (threads | string)  if item.1.value.bench.env_select_threads else '' }}
+          {{ builds_dir }}/{{ item.1.key }}-k{{ kit }}-ca-float/{{ project_name }}
+          {{ benchmark.filter }}='{{item.1.value.bench.filter_name + item.0}}'
+          {{ benchmark.min_time }}
+          {{ benchmark.format }}
+          {{ benchmark.out_format }}
+          {{ benchmark.out }}={{ item.1.key }}-ca-float.json
+          {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
+      loop: "{{ cmake_benchs }}"
+      loop_control:
+        label: "{{item.0 }}/{{ item.1.key }}"
+      when:
+        - item.1.value.bench.problemSize_time.custom_allocator
+        - item.1.value.bench.problemSize_time.float
+        - item.1.key in selected_backends
+        - item.0 in selected_algorithms
+      tags:
+        - problemSize_time

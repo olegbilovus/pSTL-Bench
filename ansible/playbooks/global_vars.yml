@@ -5,9 +5,10 @@ builds_dir: "{{ root }}/builds"
 
 # Backends
 path_bashrc: "{{ ansible_env.HOME }}/.bashrc"
+omp_num_threads: "OMP_NUM_THREADS"
 
 backends:
-  gccgnu:
+  gccseq:
     pre_cmd: ". {{ path_bashrc }} &&"
     build:
       compiler_flags: ""
@@ -15,6 +16,30 @@ backends:
       compiler: "g++"
       custom_allocator: true
       build_float: true
+    bench:
+      filter_name: "SEQ/std::"
+      env_select_threads: ""
+      flag_select_threads: ""
+      problemSize_time:
+        default_allocator: false
+        custom_allocator: true
+        float: false
+  gccgnu:
+    pre_cmd: ". {{ path_bashrc }} &&"
+    build:
+      compiler_flags: ""
+      backend: "GNU"
+      compiler: "g++"
+      custom_allocator: true
+      build_float: false
+    bench:
+      filter_name: "gnu::"
+      env_select_threads: "{{ omp_num_threads }}"
+      flag_select_threads: ""
+      problemSize_time:
+        default_allocator: false
+        custom_allocator: true
+        float: false
   gcchpx:
     pre_cmd: ". {{ path_bashrc }} &&"
     build:
@@ -23,6 +48,14 @@ backends:
       compiler: "g++"
       custom_allocator: false
       build_float: false
+    bench:
+      filter_name: "hpx::"
+      env_select_threads: ""
+      flag_select_threads: "--hpx:threads"
+      problemSize_time:
+        default_allocator: true
+        custom_allocator: false
+        float: false
   gcctbb:
     pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
     build:
@@ -31,6 +64,14 @@ backends:
       compiler: "g++"
       custom_allocator: true
       build_float: false
+    bench:
+      filter_name: "TBB/std::"
+      env_select_threads: "{{ omp_num_threads }}"
+      flag_select_threads: ""
+      problemSize_time:
+        default_allocator: false
+        custom_allocator: true
+        float: false
   icpxtbb:
     pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
     build:
@@ -39,6 +80,14 @@ backends:
       compiler: "icpx"
       custom_allocator: true
       build_float: false
+    bench:
+      filter_name: "TBB/std::"
+      env_select_threads: "{{ omp_num_threads }}"
+      flag_select_threads: ""
+      problemSize_time:
+        default_allocator: false
+        custom_allocator: true
+        float: false
   nvccuda:
     pre_cmd: ". {{ path_bashrc }} &&"
     build:
@@ -47,6 +96,14 @@ backends:
       compiler: "nvc++"
       custom_allocator: false
       build_float: true
+    bench:
+      filter_name: "CUDA/std::"
+      env_select_threads: ""
+      flag_select_threads: ""
+      problemSize_time:
+        default_allocator: true
+        custom_allocator: false
+        float: false
   nvcomp:
     pre_cmd: ". {{ path_bashrc }} &&"
     build:
@@ -55,6 +112,14 @@ backends:
       compiler: "nvc++"
       custom_allocator: true
       build_float: true
+    bench:
+      filter_name: "OMP/std::"
+      env_select_threads: "{{ omp_num_threads }}"
+      flag_select_threads: ""
+      problemSize_time:
+        default_allocator: false
+        custom_allocator: true
+        float: false
   onedplcpu:
     pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
     build:
@@ -63,6 +128,14 @@ backends:
       compiler: "icpx"
       custom_allocator: true
       build_float: true
+    bench:
+      filter_name: "onedpl::"
+      env_select_threads: "{{ omp_num_threads }}"
+      flag_select_threads: ""
+      problemSize_time:
+        default_allocator: true
+        custom_allocator: false
+        float: false
   onedplgpu:
     pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
     build:
@@ -71,3 +144,11 @@ backends:
       compiler: "icpx"
       custom_allocator: false
       build_float: true
+    bench:
+      filter_name: "onedpl::"
+      env_select_threads: ""
+      flag_select_threads: ""
+      problemSize_time:
+        default_allocator: true
+        custom_allocator: false
+        float: false
