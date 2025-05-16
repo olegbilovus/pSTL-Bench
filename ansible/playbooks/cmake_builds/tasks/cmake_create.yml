@@ -1,13 +1,15 @@
 - name: Create CMakes
   tags:
     - create_cmakes
+  ignore_errors: true
+  any_errors_fatal: false
   block:
     - name: Create default allocator double
       ansible.builtin.shell:
         cmd: >
           {{ item.1.value.pre_cmd }}
           cmake {{ cmake.release }}
-          {{ cmake.backend }}={{ item.1.value.build.backend }}
+          {{ cmake.backend }}={{ item.1.value.build.backend + "w"}}
           {{ cmake.compiler }}={{ item.1.value.build.compiler }}
           {{ cmake.kit }}={{ item.0 }}
           {{ cmake.data_type }}=double

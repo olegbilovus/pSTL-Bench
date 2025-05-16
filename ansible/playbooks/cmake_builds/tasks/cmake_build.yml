@@ -1,6 +1,8 @@
 - name: Build CMakes
   tags:
     - build_cmakes
+  ignore_errors: true
+  any_errors_fatal: false
   block:
     - name: Build default allocator double
       ansible.builtin.shell:

@@ -7,6 +7,8 @@
     - problemSize_time
 
 - name: Benchmark problemSize_time
+  ignore_errors: true
+  any_errors_fatal: false
   block:
     - name: Create problemSize_time algorithms directory
       ansible.builtin.file:
