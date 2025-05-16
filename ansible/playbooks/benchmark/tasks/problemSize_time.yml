@@ -13,10 +13,9 @@
         path: "{{ problemSize_time_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
         state: directory
         mode: "0755"
-      loop: "{{ cmake_benchs }}"
+      loop: "{{ cmake_benchs | map('first') | unique }}"
       loop_control:
-        label: "{{item.0 }}"
-        pause: 5
+        label: "{{item }}"
       when: item.0 in selected_algorithms
       tags:
         - problemSize_time
