@@ -10,13 +10,13 @@
   block:
     - name: Create problemSize_time algorithms directory
       ansible.builtin.file:
-        path: "{{ problemSize_time_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
+        path: "{{ problemSize_time_dir }}/{{ item }}{{ '-k' + (kit | string) if item == 'for_each' else '' }}"
         state: directory
         mode: "0755"
       loop: "{{ cmake_benchs | map('first') | unique }}"
       loop_control:
-        label: "{{item }}"
-      when: item.0 in selected_algorithms
+        label: "{{ item }}"
+      when: item in selected_algorithms
       tags:
         - problemSize_time
 
