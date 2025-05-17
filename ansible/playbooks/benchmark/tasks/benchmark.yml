@@ -7,6 +7,9 @@
 - name: Benchmark
   ignore_errors: true
   any_errors_fatal: false
+  tags:
+    - problemSize_time
+    - speedup_threads
   block:
     - name: Create algorithm directories
       ansible.builtin.file:
@@ -34,7 +37,7 @@
       loop: "{{ cmake_benchs }}"
       loop_control:
         label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
-        pause: 5
+        pause: "{{ 5 if not ansible_check_mode else 0 }}"
       when:
         - item.1.value.bench.default_allocator
         - item.1.key in selected_backends
@@ -58,7 +61,7 @@
       loop: "{{ cmake_benchs }}"
       loop_control:
         label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
-        pause: 5
+        pause: "{{ 5 if not ansible_check_mode else 0 }}"
       when:
         - item.1.value.bench.custom_allocator
         - item.1.key in selected_backends
@@ -82,7 +85,7 @@
       loop: "{{ cmake_benchs }}"
       loop_control:
         label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
-        pause: 5
+        pause: "{{ 5 if not ansible_check_mode else 0 }}"
       when:
         - item.1.value.bench.default_allocator
         - item.1.value.bench.float
@@ -107,7 +110,7 @@
       loop: "{{ cmake_benchs }}"
       loop_control:
         label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
-        pause: 5
+        pause: "{{ 5 if not ansible_check_mode else 0 }}"
       when:
         - item.1.value.bench.custom_allocator
         - item.1.value.bench.float
