@@ -100,9 +100,58 @@
           tags:
             - problemSize_time
 
-        # use --tags=debug when running the playbook to see the debug output
+        # use --tags=debug_problemSize_time when running the playbook to see the debug output
         - name: Print problemSize_time commands
           ansible.builtin.include_tasks: "tasks/debug/debug_benchmark.yml"
           tags:
             - never
-            - debug
+            - debug_problemSize_time
+
+    - name: Benchmark speedup_threads
+      vars:
+        bench_name: speedup_threads
+        data_dir: "{{ json_data_folder }}/{{ bench_name }}"
+        elements: "{{ 2**30 }}"
+        data_type: "/double/{{ elements }}"
+        threads_list: []
+      block:
+        - name: Set threads_list from 0 to 2^(log2(ansible_processor_vcpus))
+          ansible.builtin.set_fact:
+            threads_list: "{{ threads_list + [2**item] }}"
+          loop: "{{ range(0, (ansible_processor_vcpus | log(2) | int) + 1) | list }}"
+          tags:
+            - speedup_threads
+            - debug_speedup_threads
+
+        - name: Print threads_list
+          ansible.builtin.debug:
+            msg: "Threads list: {{ threads_list }}"
+          tags:
+            - speedup_threads
+            - debug_speedup_threads
+
+        - name: Fail if last threads_list element is not equal to ansible_processor_vcpus
+          ansible.builtin.fail:
+            msg: "Last threads_list element {{ threads_list[-1] }} is not equal to ansible_processor_vcpus {{ ansible_processor_vcpus }}"
+          when: threads_list[-1] != ansible_processor_vcpus
+          tags:
+            - speedup_threads
+            - debug_speedup_threads
+
+        - name: Run speedup_threads
+          ansible.builtin.include_tasks: "tasks/benchmark.yml"
+          loop: "{{ threads_list }}"
+          loop_control:
+            loop_var: threads
+          tags:
+            - speedup_threads
+
+        # use --tags=debug_speedup_threads when running the playbook to see the debug output
+        - name: Print speedup_threads commands
+          ansible.builtin.include_tasks: "tasks/debug/debug_benchmark.yml"
+          loop: "{{ threads_list }}"
+          loop_control:
+            loop_var: threads
+          tags:
+            - never
+            - debug_speedup_threads

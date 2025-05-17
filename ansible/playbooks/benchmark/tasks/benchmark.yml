@@ -28,12 +28,12 @@
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
-          {{ benchmark.out }}={{ item.1.key }}-da-double.json
+          {{ benchmark.out }}={{ item.1.key }}-da-double-t{{ threads }}.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
         chdir: "{{ data_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
         pause: 5
       when:
         - item.1.value.bench.default_allocator
@@ -52,12 +52,12 @@
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
-          {{ benchmark.out }}={{ item.1.key }}-ca-double.json
+          {{ benchmark.out }}={{ item.1.key }}-ca-double-t{{ threads }}.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
         chdir: "{{ data_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
         pause: 5
       when:
         - item.1.value.bench.custom_allocator
@@ -76,12 +76,12 @@
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
-          {{ benchmark.out }}={{ item.1.key }}-da-float.json
+          {{ benchmark.out }}={{ item.1.key }}-da-float-t{{ threads }}.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
         chdir: "{{ data_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
         pause: 5
       when:
         - item.1.value.bench.default_allocator
@@ -101,12 +101,12 @@
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
-          {{ benchmark.out }}={{ item.1.key }}-ca-float.json
+          {{ benchmark.out }}={{ item.1.key }}-ca-float-t{{ threads }}.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
         chdir: "{{ data_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
         pause: 5
       when:
         - item.1.value.bench.custom_allocator

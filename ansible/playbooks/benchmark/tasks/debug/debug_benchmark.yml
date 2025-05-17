@@ -1,7 +1,8 @@
 - name: Print all problemSize_time commands
   tags:
     - never
-    - debug
+    - debug_problemSize_time
+    - debug_speedup_threads
   block:
     - name: Benchmark default allocator double
       ansible.builtin.debug:
@@ -13,11 +14,11 @@
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
-          {{ benchmark.out }}={{ item.1.key }}-da-double.json
+          {{ benchmark.out }}={{ item.1.key }}-da-double-t{{ threads }}.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
       when:
         - item.1.value.bench.default_allocator
         - item.1.key in selected_backends
@@ -33,11 +34,11 @@
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
-          {{ benchmark.out }}={{ item.1.key }}-ca-double.json
+          {{ benchmark.out }}={{ item.1.key }}-ca-double-t{{ threads }}.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
       when:
         - item.1.value.bench.custom_allocator
         - item.1.key in selected_backends
@@ -53,11 +54,11 @@
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
-          {{ benchmark.out }}={{ item.1.key }}-da-float.json
+          {{ benchmark.out }}={{ item.1.key }}-da-float-t{{ threads }}.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
       when:
         - item.1.value.bench.default_allocator
         - item.1.value.bench.float
@@ -74,11 +75,11 @@
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
-          {{ benchmark.out }}={{ item.1.key }}-ca-float.json
+          {{ benchmark.out }}={{ item.1.key }}-ca-float-t{{ threads }}.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
       when:
         - item.1.value.bench.custom_allocator
         - item.1.value.bench.float
