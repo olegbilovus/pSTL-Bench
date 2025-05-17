@@ -5,7 +5,6 @@
     env: "test"
     selected_backends: []
     kit: 1
-    threads: "{{ ansible_processor_vcpus }}"
     selected_algorithms: []
 
   become: false
@@ -88,21 +87,22 @@
       tags:
         - benchmark
 
-    - name: Print number of threads
-      ansible.builtin.debug:
-        msg: "Number of threads: {{ threads }}"
-      tags:
-        - always
-
   tasks:
     - name: Benchmark problemSize_time
-      ansible.builtin.include_tasks: "tasks/problemSize_time.yml"
-      tags:
-        - problemSize_time
+      vars:
+        bench_name: problemSize_time
+        threads: "{{ ansible_processor_vcpus }}"
+        data_dir: "{{ json_data_folder }}/{{ bench_name }}"
+        data_type: ""
+      block:
+        - name: Run problemSize_time
+          ansible.builtin.include_tasks: "tasks/benchmark.yml"
+          tags:
+            - problemSize_time
 
-    # use --tags=debug when running the playbook to see the debug output
-    - name: Print problemSize_time commands
-      ansible.builtin.include_tasks: "tasks/debug/debug_problemSize_time.yml"
-      tags:
-        - never
-        - debug
+        # use --tags=debug when running the playbook to see the debug output
+        - name: Print problemSize_time commands
+          ansible.builtin.include_tasks: "tasks/debug/debug_benchmark.yml"
+          tags:
+            - never
+            - debug

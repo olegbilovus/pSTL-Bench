@@ -1,5 +1,4 @@
 json_data_folder: "{{ root }}/R/json_data"
-problemSize_time_dir: "{{ json_data_folder }}/problemSize_time"
 
 benchmark:
   filter: "--benchmark_filter"

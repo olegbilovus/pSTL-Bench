@@ -1,129 +1,86 @@
-- name: Ensure the problemSize_time directory exists
-  ansible.builtin.file:
-    path: "{{ problemSize_time_dir }}"
-    state: directory
-    mode: "0755"
+- name: Print all problemSize_time commands
   tags:
-    - problemSize_time
-
-- name: Benchmark problemSize_time
-  ignore_errors: true
-  any_errors_fatal: false
+    - never
+    - debug
   block:
-    - name: Create problemSize_time algorithms directory
-      ansible.builtin.file:
-        path: "{{ problemSize_time_dir }}/{{ item }}{{ '-k' + (kit | string) if item == 'for_each' else '' }}"
-        state: directory
-        mode: "0755"
-      loop: "{{ cmake_benchs | map('first') | unique }}"
-      loop_control:
-        label: "{{ item }}{{ '-k' + (kit | string) if item == 'for_each' else '' }}"
-      when: item in selected_algorithms
-      tags:
-        - problemSize_time
-
     - name: Benchmark default allocator double
-      ansible.builtin.shell:
-        cmd: >
+      ansible.builtin.debug:
+        msg: >
           {{ item.1.value.pre_cmd }}
           {{ item.1.value.bench.env_select_threads + '=' + (threads | string)  if item.1.value.bench.env_select_threads else '' }}
           {{ builds_dir }}/{{ item.1.key }}-k{{ kit }}-da-double/{{ project_name }}
-          {{ benchmark.filter }}='{{item.1.value.bench.filter_name + item.0}}'
+          {{ benchmark.filter }}='{{ item.1.value.bench.filter_name + item.0}}{{data_type}}'
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
           {{ benchmark.out }}={{ item.1.key }}-da-double.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
-        chdir: "{{ problemSize_time_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{item.0 }}/{{ item.1.key }}"
-        pause: 5
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
       when:
-        - item.1.value.bench.problemSize_time.default_allocator
+        - item.1.value.bench.default_allocator
         - item.1.key in selected_backends
         - item.0 in selected_algorithms
-      register: _res
-      changed_when: _res.rc == 0
-      tags:
-        - problemSize_time
 
     - name: Benchmark custom allocator double
-      ansible.builtin.shell:
-        cmd: >
+      ansible.builtin.debug:
+        msg: >
           {{ item.1.value.pre_cmd }}
           {{ item.1.value.bench.env_select_threads + '=' + (threads | string)  if item.1.value.bench.env_select_threads else '' }}
           {{ builds_dir }}/{{ item.1.key }}-k{{ kit }}-ca-double/{{ project_name }}
-          {{ benchmark.filter }}='{{item.1.value.bench.filter_name + item.0}}'
+          {{ benchmark.filter }}='{{ item.1.value.bench.filter_name + item.0}}{{data_type}}'
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
           {{ benchmark.out }}={{ item.1.key }}-ca-double.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
-        chdir: "{{ problemSize_time_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{item.0 }}/{{ item.1.key }}"
-        pause: 5
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
       when:
-        - item.1.value.bench.problemSize_time.custom_allocator
+        - item.1.value.bench.custom_allocator
         - item.1.key in selected_backends
         - item.0 in selected_algorithms
-      register: _res
-      changed_when: _res.rc == 0
-      tags:
-        - problemSize_time
 
     - name: Benchmark default allocator float
-      ansible.builtin.shell:
-        cmd: >
+      ansible.builtin.debug:
+        msg: >
           {{ item.1.value.pre_cmd }}
           {{ item.1.value.bench.env_select_threads + '=' + (threads | string)  if item.1.value.bench.env_select_threads else '' }}
           {{ builds_dir }}/{{ item.1.key }}-k{{ kit }}-da-float/{{ project_name }}
-          {{ benchmark.filter }}='{{item.1.value.bench.filter_name + item.0}}'
+          {{ benchmark.filter }}='{{ item.1.value.bench.filter_name + item.0}}{{data_type}}'
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
           {{ benchmark.out }}={{ item.1.key }}-da-float.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
-        chdir: "{{ problemSize_time_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{item.0 }}/{{ item.1.key }}"
-        pause: 5
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
       when:
-        - item.1.value.bench.problemSize_time.default_allocator
-        - item.1.value.bench.problemSize_time.float
+        - item.1.value.bench.default_allocator
+        - item.1.value.bench.float
         - item.1.key in selected_backends
         - item.0 in selected_algorithms
-      register: _res
-      changed_when: _res.rc == 0
-      tags:
-        - problemSize_time
 
     - name: Benchmark custom allocator float
-      ansible.builtin.shell:
-        cmd: >
+      ansible.builtin.debug:
+        msg: >
           {{ item.1.value.pre_cmd }}
           {{ item.1.value.bench.env_select_threads + '=' + (threads | string)  if item.1.value.bench.env_select_threads else '' }}
           {{ builds_dir }}/{{ item.1.key }}-k{{ kit }}-ca-float/{{ project_name }}
-          {{ benchmark.filter }}='{{item.1.value.bench.filter_name + item.0}}'
+          {{ benchmark.filter }}='{{ item.1.value.bench.filter_name + item.0}}{{data_type}}'
           {{ benchmark.min_time }}
           {{ benchmark.format }}
           {{ benchmark.out_format }}
           {{ benchmark.out }}={{ item.1.key }}-ca-float.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
-        chdir: "{{ problemSize_time_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
       loop: "{{ cmake_benchs }}"
       loop_control:
-        label: "{{item.0 }}/{{ item.1.key }}"
-        pause: 5
+        label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}"
       when:
-        - item.1.value.bench.problemSize_time.custom_allocator
-        - item.1.value.bench.problemSize_time.float
+        - item.1.value.bench.custom_allocator
+        - item.1.value.bench.float
         - item.1.key in selected_backends
         - item.0 in selected_algorithms
-      register: _res
-      changed_when: _res.rc == 0
-      tags:
-        - problemSize_time
