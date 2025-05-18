@@ -32,7 +32,7 @@ data <- data %>%
 # extract the algorithm name from the 'name' column
 data <- data %>%
   mutate(
-    algorithm = get_algorithm(name),
+    algorithm = get_algorithm(name, kernel_its),
   )
 
 # Extract the name for the plot
@@ -48,7 +48,6 @@ data <- data %>%
 data <- data %>%
   mutate(name = factor(name, levels = unique(name)))
 
-print(data)
 # Ensure all combinations of algorithm and name are present, filling missing values with NA
 speedup_data <- data %>%
   complete(algorithm, name, fill = list(real_time = NA)) %>% # Add missing combinations with NA

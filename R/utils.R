@@ -34,9 +34,10 @@ get_elements <- function(name) {
   return(elements)
 }
 
-get_algorithm <- function(name) {
-  # Extract the algorithm name from the 'name' column
+get_algorithm <- function(name, kernel_its) {
+  # Extract the algorithm name from the 'name' column and append the kernel_its if not NA
   algorithm <- str_split_fixed(str_split_fixed(name, "/", 3)[, 2], "::", 2)[, 2]
+  algorithm <- ifelse(!is.na(kernel_its), paste(algorithm, "-k", kernel_its, sep = ""), algorithm)
   return(algorithm)
 }
 
