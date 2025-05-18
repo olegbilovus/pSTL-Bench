@@ -221,3 +221,58 @@
           tags:
             - never
             - debug_speedup_customAllocator
+
+        - name: Ensure custom_allocator and default_allocator directories exist
+          ansible.builtin.file:
+            path: "{{ data_dir }}/{{ item }}"
+            state: directory
+            mode: "0755"
+          loop:
+            - da
+            - ca
+
+        - name: Set fact product of allocators and selected algorithms
+          ansible.builtin.set_fact:
+            allocators_algorithms: "{{ ['da', 'ca'] | product(selected_algorithms) | list }}"
+          tags:
+            - speedup_customAllocator
+            - debug_speedup_customAllocator
+
+        - name: Ensure the algorithm directories exist for each allocator
+          ansible.builtin.file:
+            path: "{{ data_dir }}/{{ item.0 }}/{{ item.1 }}"
+            state: directory
+            mode: "0755"
+          loop: "{{ allocators_algorithms }}"
+          loop_control:
+            label: "{{ item.0 }}-{{ item.1 }}"
+
+        - name: Move files to correct directories
+          ansible.builtin.command: >
+            mv {{ data_dir }}/{{item.1}}/*-{{ item.0 }}*.json {{ data_dir }}/{{ item.0 }}/{{ item.1 }}
+          loop: "{{ allocators_algorithms }}"
+          loop_control:
+            label: "{{ item.0 }}-{{ item.1 }}"
+          register: move_result
+          failed_when: move_result.rc != 0
+          changed_when: move_result.rc == 0
+          tags:
+            - speedup_customAllocator
+
+        - name: Deleted algorithms directories
+          ansible.builtin.file:
+            path: "{{ data_dir }}/{{ item }}"
+            state: absent
+          loop: "{{ selected_algorithms }}"
+          tags:
+            - speedup_customAllocator
+
+        - name: Print move files commands
+          ansible.builtin.debug:
+            msg: "mv {{ data_dir }}/{{item.1}}/*-{{ item.0 }}*.json {{ data_dir }}/{{ item.0 }}/{{ item.1 }}"
+          loop: "{{ allocators_algorithms }}"
+          loop_control:
+            label: "{{ item.0 }}-{{ item.1 }}"
+          tags:
+            - never
+            - debug_speedup_customAllocator
