@@ -14,14 +14,14 @@ backends:
       compiler_flags: ""
       backend: "GNU"
       compiler: "g++"
-      custom_allocator: true
+      custom_allocator: false
       build_float: true
     bench:
       filter_name: "SEQ/std::"
       env_select_threads: ""
       flag_select_threads: ""    
-      default_allocator: false
-      custom_allocator: true
+      default_allocator: true
+      custom_allocator: false
       float: false
   gccgnu:
     pre_cmd: ". {{ path_bashrc }} &&"

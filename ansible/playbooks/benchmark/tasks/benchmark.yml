@@ -10,6 +10,7 @@
   tags:
     - problemSize_time
     - speedup_threads
+    - speedup_customAllocator
   block:
     - name: Create algorithm directories
       ansible.builtin.file:

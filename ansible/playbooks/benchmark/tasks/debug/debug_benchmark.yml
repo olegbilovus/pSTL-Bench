@@ -3,6 +3,7 @@
     - never
     - debug_problemSize_time
     - debug_speedup_threads
+    - debug_speedup_customAllocator
   block:
     - name: Benchmark default allocator double
       ansible.builtin.debug:

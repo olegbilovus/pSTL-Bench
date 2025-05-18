@@ -155,3 +155,69 @@
           tags:
             - never
             - debug_speedup_threads
+
+    - name: Benchmark speedup_customAllocator
+      vars:
+        bench_name: speedup_customAllocator
+        data_dir: "{{ json_data_folder }}/{{ bench_name }}"
+        elements: "{{ 2**30 }}"
+        data_type: "/double/{{ elements }}"
+        threads: "{{ ansible_processor_vcpus }}"
+      block:
+        - name: Set bench allocators based on build allocators
+          ansible.builtin.set_fact:
+            backends: >-
+              {{
+                backends | combine({
+                  item.key: item.value | combine({
+                    'bench': item.value.bench | combine({
+                      'default_allocator': true,
+                      'custom_allocator': item.value.build.custom_allocator
+                    })
+                  })
+                })
+              }}
+          loop: "{{ backends | dict2items }}"
+          loop_control:
+            label: "{{ item.key }}"
+          tags:
+            - speedup_customAllocator
+            - debug_speedup_customAllocator
+
+        - name: Remove the backends that do not have both bench default_allocator and custom_allocator
+          ansible.builtin.set_fact:
+            backends: >-
+              {{
+                backends
+                | dict2items
+                | selectattr('value.bench.default_allocator', 'equalto', true)
+                | selectattr('value.bench.custom_allocator', 'equalto', true)
+                | list
+                | items2dict
+              }}
+          loop: "{{ backends | dict2items }}"
+          loop_control:
+            label: "{{ item.key }}"
+          when: not item.value.bench.default_allocator or not item.value.bench.custom_allocator
+          tags:
+            - speedup_customAllocator
+            - debug_speedup_customAllocator
+
+        - name: Set again fact for selected cmake builds
+          ansible.builtin.set_fact:
+            cmake_benchs: "{{ selected_algorithms | product(backends | dict2items) | list | selectattr('1.key', 'in', selected_backends) | list }}"
+          tags:
+            - speedup_customAllocator
+            - debug_speedup_customAllocator
+
+        - name: Run speedup_customAllocator
+          ansible.builtin.include_tasks: "tasks/benchmark.yml"
+          tags:
+            - speedup_customAllocator
+
+        # use --tags=debug_speedup_customAllocator when running the playbook to see the debug output
+        - name: Print speedup_customAllocator commands
+          ansible.builtin.include_tasks: "tasks/debug/debug_benchmark.yml"
+          tags:
+            - never
+            - debug_speedup_customAllocator
