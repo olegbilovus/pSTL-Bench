@@ -1,0 +1,18 @@
+- name: Benchmark problemSize_time
+  vars:
+    bench_name: problemSize_time
+    threads: "{{ ansible_processor_vcpus }}"
+    data_dir: "{{ json_data_folder }}/{{ bench_name }}"
+    data_type: ""
+  block:
+    - name: Run problemSize_time
+      ansible.builtin.include_tasks: "benchmark.yml"
+      tags:
+        - problemSize_time
+
+    # use --tags=debug_problemSize_time when running the playbook to see the debug output
+    - name: Print problemSize_time commands
+      ansible.builtin.include_tasks: "debug/debug_benchmark.yml"
+      tags:
+        - never
+        - debug_problemSize_time
