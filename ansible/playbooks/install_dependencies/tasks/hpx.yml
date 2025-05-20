@@ -1,0 +1,41 @@
+- name: Install HPX
+  tags:
+    - hpx
+  block:
+    - name: Install HPX dependencies
+      ansible.builtin.apt:
+        name:
+          - cmake
+          - libboost-all-dev
+          - libhwloc-dev
+          - libnuma-dev
+          - librust-tcmalloc-dev
+        state: present
+
+    - name: Clone HPX repository
+      ansible.builtin.git:
+        repo: "https://github.com/STEllAR-GROUP/hpx.git"
+        dest: "{{ ansible_env.HOME }}/hpx"
+        version: "master"
+
+    - name: Create build directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/hpx/build"
+        state: directory
+        mode: "0755"
+
+    - name: Build HPX
+      ansible.builtin.command:
+        cmd: "cmake .. -DHPX_WITH_FETCH_ASIO=ON"
+        chdir: "{{ ansible_env.HOME }}/hpx/build"
+      args:
+        creates: "{{ ansible_env.HOME }}/hpx/build/CMakeCache.txt"
+      register: hpx_build
+
+    - name: Install HPX
+      ansible.builtin.command:
+        cmd: "make install"
+        chdir: "{{ ansible_env.HOME }}/hpx/build"
+      args:
+        creates: "/usr/local/include/hpx/hpx.hpp"
+      register: hpx_install

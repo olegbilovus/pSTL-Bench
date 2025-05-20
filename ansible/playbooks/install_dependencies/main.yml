@@ -48,3 +48,8 @@
         state: present
       tags:
         - gnu
+
+    - name: Install HPX
+      ansible.builtin.include_tasks: "tasks/hpx.yml"
+      tags:
+        - hpx
