@@ -85,7 +85,7 @@
         state: directory
         mode: "0755"
       tags:
-        - benchmark
+        - always
 
   tasks:
     - name: Benchmark problemSize_time
