@@ -13,6 +13,7 @@
           {{ cmake.kit }}={{ item.0 }}
           {{ cmake.data_type }}=double
           {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
+          {{ item.1.value.build.cmake_flags }}
           -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-double
       loop: "{{ cmake_builds }}"
       loop_control:
@@ -33,6 +34,7 @@
           {{ cmake.kit }}={{ item.0 }}
           {{ cmake.data_type }}=double
           {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
+          {{ item.1.value.build.cmake_flags }}
           -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-double
       loop: "{{ cmake_builds }}"
       loop_control:
@@ -52,6 +54,7 @@
           {{ cmake.kit }}={{ item.0 }}
           {{ cmake.data_type }}=float
           {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
+          {{ item.1.value.build.cmake_flags }}
           -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-float
       loop: "{{ cmake_builds }}"
       loop_control:
@@ -72,6 +75,7 @@
           {{ cmake.kit }}={{ item.0 }}
           {{ cmake.data_type }}=float
           {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
+          {{ item.1.value.build.cmake_flags }}
           -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-float
       loop: "{{ cmake_builds }}"
       loop_control:

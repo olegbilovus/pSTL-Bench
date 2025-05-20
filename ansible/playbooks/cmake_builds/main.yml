@@ -105,6 +105,54 @@
         - create_cmakes
         - build_cmakes
 
+    - name: Ensure hpc_sdk is in PATH
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export PATH="$PATH:{{ nvhpc_sdk_path }}"'
+        state: present
+        create: true
+        mode: "0755"
+      when: '"nvcomp" in selected_backends or "nvccuda" in selected_backends'
+      tags:
+        - create_cmakes
+        - build_cmakes
+
+    - name: Ensure hpc_sdk is in LD_LIBRARY_PATH
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:{{ nvhpc_sdk_path_lib }}"'
+        state: present
+        create: true
+        mode: "0755"
+      when: '"nvcomp" in selected_backends or "nvccuda" in selected_backends'
+      tags:
+        - create_cmakes
+        - build_cmakes
+
+    - name: Ensure cuda is in PATH
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export PATH="$PATH:{{ cuda_path }}"'
+        state: present
+        create: true
+        mode: "0755"
+      when: '"nvcomp" in selected_backends or "nvccuda" in selected_backends or "onedplgpu" in selected_backends'
+      tags:
+        - create_cmakes
+        - build_cmakes
+
+    - name: Ensure cuda is in LD_LIBRARY_PATH
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:{{ cuda_path_lib }}"'
+        state: present
+        create: true
+        mode: "0755"
+      when: '"nvcomp" in selected_backends or "nvccuda" in selected_backends or "onedplgpu" in selected_backends'
+      tags:
+        - create_cmakes
+        - build_cmakes
+
   tasks:
     - name: Create CMakes
       ansible.builtin.include_tasks: "tasks/cmake_create.yml"

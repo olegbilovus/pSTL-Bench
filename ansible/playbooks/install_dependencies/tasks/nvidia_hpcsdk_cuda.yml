@@ -37,7 +37,7 @@
     - name: Add NVIDIA HPC SDK to PATH
       ansible.builtin.lineinfile:
         path: "{{ item }}"
-        line: 'export PATH="$PATH:/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/bin"'
+        line: 'export PATH="$PATH:{{ nvhpc_sdk_path }}"'
         state: present
         create: true
         mode: "0755"
@@ -45,3 +45,47 @@
         - /etc/profile.d/nvidia-hpc-sdk.sh
         - /etc/bash.bashrc
         - "{{ ansible_env.HOME }}/.bashrc"
+
+    - name: Add NVIDIA HPC SDK to LD_LIBRARY_PATH
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        line: 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:{{ nvhpc_sdk_path_lib }}"'
+        state: present
+        create: true
+        mode: "0755"
+      loop:
+        - /etc/profile.d/nvidia-hpc-sdk.sh
+        - /etc/bash.bashrc
+        - "{{ ansible_env.HOME }}/.bashrc"
+
+    - name: Add CUDA to PATH
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        line: 'export PATH="$PATH:{{ cuda_path }}"'
+        state: present
+        create: true
+        mode: "0755"
+      loop:
+        - /etc/profile.d/nvidia-hpc-sdk.sh
+        - /etc/bash.bashrc
+        - "{{ ansible_env.HOME }}/.bashrc"
+
+    - name: Add CUDA to LD_LIBRARY_PATH
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        line: 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:{{ cuda_path_lib }}"'
+        state: present
+        create: true
+        mode: "0755"
+      loop:
+        - /etc/profile.d/nvidia-hpc-sdk.sh
+        - /etc/bash.bashrc
+        - "{{ ansible_env.HOME }}/.bashrc"
+
+    - name: Install cuda-toolkit-12-5 and nvidia-gds
+      ansible.builtin.apt:
+        name:
+          - cuda-toolkit-12-5
+          - nvidia-gds
+        state: present
+        update_cache: true

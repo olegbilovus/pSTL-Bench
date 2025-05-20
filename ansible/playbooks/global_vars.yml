@@ -7,6 +7,12 @@ builds_dir: "{{ root }}/builds"
 path_bashrc: "{{ ansible_env.HOME }}/.bashrc"
 omp_num_threads: "OMP_NUM_THREADS"
 
+nvhpc_sdk_path: "/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/bin"
+nvhpc_sdk_path_lib: "/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/lib64"
+
+cuda_path: "/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/bin"
+cuda_path_lib: "/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/lib64"
+
 backends:
   gccseq:
     pre_cmd: ". {{ path_bashrc }} &&"
@@ -16,6 +22,7 @@ backends:
       compiler: "g++"
       custom_allocator: false
       build_float: true
+      cmake_flags: ""
     bench:
       filter_name: "SEQ/std::"
       env_select_threads: ""
@@ -31,6 +38,7 @@ backends:
       compiler: "g++"
       custom_allocator: true
       build_float: false
+      cmake_flags: ""
     bench:
       filter_name: "gnu::"
       env_select_threads: "{{ omp_num_threads }}"
@@ -46,6 +54,7 @@ backends:
       compiler: "g++"
       custom_allocator: false
       build_float: false
+      cmake_flags: ""
     bench:
       filter_name: "hpx::"
       env_select_threads: ""
@@ -61,6 +70,7 @@ backends:
       compiler: "g++"
       custom_allocator: true
       build_float: false
+      cmake_flags: ""
     bench:
       filter_name: "TBB/std::"
       env_select_threads: "{{ omp_num_threads }}"
@@ -76,6 +86,7 @@ backends:
       compiler: "icpx"
       custom_allocator: true
       build_float: false
+      cmake_flags: ""
     bench:
       filter_name: "TBB/std::"
       env_select_threads: "{{ omp_num_threads }}"
@@ -84,13 +95,14 @@ backends:
       custom_allocator: true
       float: false
   nvccuda:
-    pre_cmd: ". {{ path_bashrc }} &&"
+    pre_cmd: ". {{ path_bashrc }} && export PATH=$PATH:{{ nvhpc_sdk_path }} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ nvhpc_sdk_path_lib }} &&"
     build:
       compiler_flags: ""
       backend: "NVHPC_CUDA"
       compiler: "nvc++"
       custom_allocator: false
       build_float: true
+      cmake_flags: "-DHAVE_STD_REGEX=ON"
     bench:
       filter_name: "CUDA/std::"
       env_select_threads: ""
@@ -99,13 +111,14 @@ backends:
       custom_allocator: false
       float: false
   nvcomp:
-    pre_cmd: ". {{ path_bashrc }} &&"
+    pre_cmd: ". {{ path_bashrc }} && export PATH=$PATH:{{ nvhpc_sdk_path }} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ nvhpc_sdk_path_lib }} &&"
     build:
       compiler_flags: ""
       backend: "NVHPC_OMP"
       compiler: "nvc++"
       custom_allocator: true
       build_float: true
+      cmake_flags: "-DHAVE_STD_REGEX=ON"
     bench:
       filter_name: "OMP/std::"
       env_select_threads: "{{ omp_num_threads }}"
@@ -121,6 +134,7 @@ backends:
       compiler: "icpx"
       custom_allocator: true
       build_float: true
+      cmake_flags: ""
     bench:
       filter_name: "onedpl::"
       env_select_threads: "{{ omp_num_threads }}"
@@ -129,13 +143,14 @@ backends:
       custom_allocator: false
       float: false
   onedplgpu:
-    pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
+    pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh && export PATH=$PATH:{{ cuda_path }} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ cuda_path_lib }} &&"
     build:
       compiler_flags: "-fsycl -fsycl-targets=nvptx64-nvidia-cuda" # select the target architecture
       backend: "ONEDPL_GPU"
       compiler: "icpx"
       custom_allocator: false
       build_float: true
+      cmake_flags: ""
     bench:
       filter_name: "onedpl::"
       env_select_threads: ""

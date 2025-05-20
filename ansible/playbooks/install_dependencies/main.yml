@@ -6,6 +6,11 @@
   any_errors_fatal: true
 
   pre_tasks:
+    - name: Load global variables from file
+      ansible.builtin.include_vars: "../global_vars.yml"
+      tags:
+        - always
+
     - name: Apt update
       ansible.builtin.apt:
         update_cache: true
