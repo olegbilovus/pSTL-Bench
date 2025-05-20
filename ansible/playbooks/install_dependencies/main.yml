@@ -1,0 +1,57 @@
+- name: Install dependencies
+  hosts: all
+
+  become: true
+  become_user: root
+  gather_facts: true
+  any_errors_fatal: true
+
+  pre_tasks:
+    - name: Apt update
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 86400 # 1 day
+      tags:
+        - always
+
+    - name: Install pkgs for apt
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+      tags:
+        - always
+
+  tasks:
+    # https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2025-1/apt-002.html#BASE-APT
+    - name: Install oneAPI
+      tags:
+        - oneAPI
+      block:
+        - name: Download gpg key
+          ansible.builtin.get_url:
+            url: "https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB"
+            dest: "/usr/share/keyrings/oneapi-archive-keyring.gpg_armored"
+            mode: "0644"
+
+        - name: De-Armor gpg key
+          ansible.builtin.shell:
+            cmd: "gpg --dearmor < /usr/share/keyrings/oneapi-archive-keyring.gpg_armored > /usr/share/keyrings/oneapi-archive-keyring.gpg"
+          args:
+            creates: "/usr/share/keyrings/oneapi-archive-keyring.gpg"
+
+        - name: Add oneAPI repository to apt
+          ansible.builtin.apt_repository:
+            repo: "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main"
+            state: present
+
+        - name: Install oneAPI packages
+          ansible.builtin.apt:
+            name: intel-oneapi-base-toolkit
+            state: present
+            update_cache: true
