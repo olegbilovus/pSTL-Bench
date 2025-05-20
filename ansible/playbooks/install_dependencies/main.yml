@@ -22,7 +22,6 @@
           - gnupg
           - lsb-release
           - alsa-utils
-          - parallel
         state: present
       tags:
         - always
@@ -42,3 +41,10 @@
       ansible.builtin.include_tasks: "tasks/nvidia_hpcsdk_cuda.yml"
       tags:
         - nvidia
+
+    - name: Install parallel for GNU
+      ansible.builtin.apt:
+        name: parallel
+        state: present
+      tags:
+        - gnu
