@@ -1,0 +1,108 @@
+- name: Build CMake benchmarks
+  hosts: all
+
+  vars:
+    env: "test"
+    selected_backends: []
+    kit: 1
+    selected_algorithms: []
+
+  become: false
+  gather_facts: true
+  any_errors_fatal: false
+
+  pre_tasks:
+    - name: Load global variables from file
+      ansible.builtin.include_vars: "../global_vars.yml"
+      tags:
+        - always
+
+    - name: Load local variables from file
+      ansible.builtin.include_vars: "vars.yml"
+      tags:
+        - always
+
+    - name: Check selected_backends is not empty
+      any_errors_fatal: true
+      ansible.builtin.fail:
+        msg: "No backends selected. Please set the 'selected_backends' variable. Available backends are: {{ backends.keys() | join(', ') }}"
+      when: selected_backends | length == 0
+      tags:
+        - always
+
+    - name: Check selected backends exist
+      any_errors_fatal: true
+      ansible.builtin.fail:
+        msg: "Selected backend '{{ item }}' does not exist in the backends list. Available backends are: {{ backends.keys() | join(', ') }}"
+      loop: "{{ selected_backends }}"
+      loop_control:
+        label: "{{ item }}"
+      when: item not in backends.keys()
+      tags:
+        - always
+
+    - name: Check selected algorithms is not empty
+      any_errors_fatal: true
+      ansible.builtin.fail:
+        msg: "No algorithms selected. Please set the 'selected_algorithms' variable. Available algorithms are: {{ algorithms | join(', ') }}"
+      when: selected_algorithms | length == 0
+      tags:
+        - always
+
+    - name: Check selected algorithms exist
+      any_errors_fatal: true
+      ansible.builtin.fail:
+        msg: "Selected algorithm '{{ item }}' does not exist in the algorithms list. Available algorithms are: {{ algorithms | join(', ') }}"
+      loop: "{{ selected_algorithms }}"
+      loop_control:
+        label: "{{ item }}"
+      when: item not in algorithms
+      tags:
+        - always
+
+    - name: Set fact for selected cmake builds
+      ansible.builtin.set_fact:
+        cmake_benchs: "{{ selected_algorithms | product(backends | dict2items) | list | selectattr('1.key', 'in', selected_backends) | list }}"
+      tags:
+        - always
+
+    - name: Set the root directory to dev
+      ansible.builtin.set_fact:
+        root: "{{ ansible_env.HOME }}/{{ project_name }}.dev"
+      when: env == 'dev'
+      tags:
+        - always
+
+    - name: Print the root directory
+      ansible.builtin.debug:
+        msg: "Root directory: {{ root }}"
+      tags:
+        - always
+
+    - name: Ensure the json_data directory exists
+      ansible.builtin.file:
+        path: "{{ json_data_folder }}"
+        state: directory
+        mode: "0755"
+      tags:
+        - always
+
+  tasks:
+    - name: Benchmark problemSize_time
+      ansible.builtin.include_tasks: "tasks/problemSize_time.yml"
+      tags:
+        - problemSize_time
+        - debug_problemSize_time
+
+    - name: Benchmark speedup_threads
+      ansible.builtin.include_tasks: "tasks/speedup_threads.yml"
+      tags:
+        - speedup_threads
+        - debug_speedup_threads
+
+    - name: Benchmark speedup_customAllocator
+      ansible.builtin.include_tasks: "tasks/speedup_customAllocator.yml"
+      tags:
+        - speedup_customAllocator
+        - speedup_customAllocator_moveFiles
+        - debug_speedup_customAllocator

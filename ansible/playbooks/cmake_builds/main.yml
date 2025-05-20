@@ -1,0 +1,179 @@
+- name: Build CMake benchmarks
+  hosts: all
+
+  vars:
+    env: "test"
+    selected_backends: []
+    kits: [1, 1000]
+
+  become: false
+  gather_facts: true
+  any_errors_fatal: false
+
+  pre_tasks:
+    - name: Load global variables from file
+      ansible.builtin.include_vars: "../global_vars.yml"
+      tags:
+        - always
+
+    - name: Load local variables from file
+      ansible.builtin.include_vars: "vars.yml"
+      tags:
+        - always
+
+    - name: Set the root directory to dev
+      ansible.builtin.set_fact:
+        root: "{{ ansible_env.HOME }}/{{ project_name }}.dev"
+      when: env == 'dev'
+      tags:
+        - always
+
+    - name: Print the root directory
+      ansible.builtin.debug:
+        msg: "Root directory: {{ root }}"
+      tags:
+        - always
+
+    - name: Check selected_backends is not empty
+      any_errors_fatal: true
+      ansible.builtin.fail:
+        msg: "No backends selected. Please set the 'selected_backends' variable. Available backends are: {{ backends.keys() | join(', ') }}"
+      when: selected_backends | length == 0
+      tags:
+        - always
+
+    - name: Check selected backends exist
+      any_errors_fatal: true
+      ansible.builtin.fail:
+        msg: "Selected backend '{{ item }}' does not exist in the backends list. Available backends are: {{ backends.keys() | join(', ') }}"
+      loop: "{{ selected_backends }}"
+      loop_control:
+        label: "{{ item }}"
+      when: item not in backends.keys()
+      tags:
+        - always
+
+    - name: Set fact for selected cmake builds
+      ansible.builtin.set_fact:
+        cmake_builds: "{{ kits | product(backends | dict2items) | list | selectattr('1.key', 'in', selected_backends) | list }}"
+      tags:
+        - always
+
+    - name: Ensure the git repository is cloned
+      ansible.builtin.git:
+        repo: "{{ git_repo }}"
+        dest: "{{ root }}"
+        version: "main"
+        force: true
+      tags:
+        - create_cmakes
+        - build_cmakes
+
+    - name: Ensure the builds directory exists
+      ansible.builtin.file:
+        path: "{{ builds_dir }}"
+        state: directory
+        mode: "0755"
+      tags:
+        - create_cmakes
+        - build_cmakes
+
+    - name: Apt update
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 86400 # 1 day
+      tags:
+        - create_cmakes
+        - build_cmakes
+
+    - name: Install dependencies
+      become: true
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - build-essential
+        - cmake
+        - libboost-all-dev
+        - numactl
+        - libnuma-dev
+        - parallel
+        - librust-tcmalloc-dev
+        - hwloc
+      tags:
+        - create_cmakes
+        - build_cmakes
+
+    - name: Ensure hpc_sdk is in PATH
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export PATH="$PATH:{{ nvhpc_sdk_path }}"'
+        state: present
+        create: true
+        mode: "0755"
+      when: '"nvcomp" in selected_backends or "nvccuda" in selected_backends'
+      tags:
+        - create_cmakes
+        - build_cmakes
+
+    - name: Ensure hpc_sdk is in LD_LIBRARY_PATH
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:{{ nvhpc_sdk_path_lib }}"'
+        state: present
+        create: true
+        mode: "0755"
+      when: '"nvcomp" in selected_backends or "nvccuda" in selected_backends'
+      tags:
+        - create_cmakes
+        - build_cmakes
+
+    - name: Ensure cuda is in PATH
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export PATH="$PATH:{{ cuda_path }}"'
+        state: present
+        create: true
+        mode: "0755"
+      when: '"nvcomp" in selected_backends or "nvccuda" in selected_backends or "onedplgpu" in selected_backends'
+      tags:
+        - create_cmakes
+        - build_cmakes
+
+    - name: Ensure cuda is in LD_LIBRARY_PATH
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:{{ cuda_path_lib }}"'
+        state: present
+        create: true
+        mode: "0755"
+      when: '"nvcomp" in selected_backends or "nvccuda" in selected_backends or "onedplgpu" in selected_backends'
+      tags:
+        - create_cmakes
+        - build_cmakes
+
+  tasks:
+    - name: Create CMakes
+      ansible.builtin.include_tasks: "tasks/cmake_create.yml"
+      tags:
+        - create_cmakes
+
+    - name: Build CMakes
+      ansible.builtin.include_tasks: "tasks/cmake_build.yml"
+      tags:
+        - build_cmakes
+
+    # use --tags=debug when running the playbook to see the debug output
+    - name: Print create CMakes commands
+      ansible.builtin.include_tasks: "tasks/debug/debug_cmake_create.yml"
+      tags:
+        - never
+        - debug
+
+      # use --tags=debug when running the playbook to see the debug output
+    - name: Print build CMakes commands
+      ansible.builtin.include_tasks: "tasks/debug/debug_cmake_build.yml"
+      tags:
+        - never
+        - debug

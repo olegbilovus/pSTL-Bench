@@ -1,0 +1,60 @@
+- name: Install dependencies
+  hosts: all
+
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+
+  pre_tasks:
+    - name: Load global variables from file
+      ansible.builtin.include_vars: "../global_vars.yml"
+      tags:
+        - always
+
+    - name: Apt update
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 86400 # 1 day
+      tags:
+        - always
+
+    - name: Install pkgs for apt
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - alsa-utils
+        state: present
+      tags:
+        - always
+
+  tasks:
+    - name: Install oneAPI
+      ansible.builtin.include_tasks: "tasks/oneapi.yml"
+      tags:
+        - oneAPI
+
+    - name: Install NVIDIA oneAPI plugin
+      ansible.builtin.include_tasks: "tasks/nvidia_oneapi_plugin.yml"
+      tags:
+        - nvidia_oneAPI
+
+    - name: Install NVIDIA HPC SDK with CUDA
+      ansible.builtin.include_tasks: "tasks/nvidia_hpcsdk_cuda.yml"
+      tags:
+        - nvidia
+
+    - name: Install parallel for GNU
+      ansible.builtin.apt:
+        name: parallel
+        state: present
+      tags:
+        - gnu
+
+    - name: Install HPX
+      ansible.builtin.include_tasks: "tasks/hpx.yml"
+      tags:
+        - hpx
