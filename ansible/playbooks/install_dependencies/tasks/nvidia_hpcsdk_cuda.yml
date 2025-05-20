@@ -1,0 +1,47 @@
+- name: Install NVIDIA HPC SDK with CUDA
+  tags:
+    - nvidia
+  block:
+    - name: Install required pkgs
+      ansible.builtin.apt:
+        name:
+          - cmake
+          - pkg-config
+          - build-essential
+        state: present
+
+    # https://developer.nvidia.com/hpc-sdk-downloads
+    - name: Download NVIDIA HPC SDK gpg key
+      ansible.builtin.get_url:
+        url: "https://developer.download.nvidia.com/hpc-sdk/ubuntu/DEB-GPG-KEY-NVIDIA-HPC-SDK"
+        dest: "/usr/share/keyrings/nvidia-hpcsdk-archive-keyring.gpg_armored"
+        mode: "0644"
+
+    - name: De-Armor NVIDIA HPC SDK gpg key
+      ansible.builtin.shell:
+        cmd: "gpg --dearmor < /usr/share/keyrings/nvidia-hpcsdk-archive-keyring.gpg_armored > /usr/share/keyrings/nvidia-hpcsdk-archive-keyring.gpg"
+      args:
+        creates: "/usr/share/keyrings/nvidia-hpcsdk-archive-keyring.gpg"
+
+    - name: Add NVIDIA HPC SDK repository to apt
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/nvidia-hpcsdk-archive-keyring.gpg] https://developer.download.nvidia.com/hpc-sdk/ubuntu/amd64 /"
+        state: present
+
+    - name: Install NVIDIA HPC SDK
+      ansible.builtin.apt:
+        name: nvhpc-25-3
+        state: present
+        update_cache: true
+
+    - name: Add NVIDIA HPC SDK to PATH
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        line: 'export PATH="$PATH:/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/bin"'
+        state: present
+        create: true
+        mode: "0755"
+      loop:
+        - /etc/profile.d/nvidia-hpc-sdk.sh
+        - /etc/bash.bashrc
+        - "{{ ansible_env.HOME }}/.bashrc"

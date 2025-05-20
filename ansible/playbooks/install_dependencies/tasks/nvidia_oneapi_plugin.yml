@@ -1,0 +1,16 @@
+# https://developer.codeplay.com/products/oneapi/nvidia/2025.1.0/guides/get-started-guide-nvidia
+- name: Install NVIDIA oneAPI plugin
+  tags:
+    - nvidia_oneAPI
+  block:
+    - name: Download install oneapi plugin script
+      ansible.builtin.get_url:
+        url: "https://developer.codeplay.com/api/v1/products/download?product=oneapi&variant=nvidia&filters[]=linux"
+        dest: "{{ ansible_env.HOME }}/oneapi-nvidia-plugin.sh"
+        mode: "0755"
+
+    - name: Install NVIDIA oneAPI plugin
+      ansible.builtin.command:
+        cmd: "{{ ansible_env.HOME }}/oneapi-nvidia-plugin.sh -b 12.5 -y"
+      args:
+        creates: "/opt/intel/oneapi/compiler/latest/share/doc/compiler/oneAPI_for_nvidia_GPUs"
