@@ -101,6 +101,7 @@
         - parallel
         - librust-tcmalloc-dev
         - hwloc
+        - git
       tags:
         - create_cmakes
         - build_cmakes

@@ -10,6 +10,7 @@
           - libhwloc-dev
           - libnuma-dev
           - librust-tcmalloc-dev
+          - git
         state: present
 
     - name: Clone HPX repository
