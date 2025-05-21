@@ -4,7 +4,7 @@
     data_dir: "{{ json_data_folder }}/{{ bench_name }}"
     elements: "{{ 2**30 }}"
     data_type: "/double/{{ elements }}"
-    threads: "{{ ansible_processor_vcpus }}"
+    threads: "{{ ansible_processor_nproc }}"
   block:
     - name: Set bench allocators based on build allocators
       ansible.builtin.set_fact:

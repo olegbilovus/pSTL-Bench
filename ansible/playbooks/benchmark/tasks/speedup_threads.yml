@@ -6,10 +6,10 @@
     data_type: "/double/{{ elements }}"
     threads_list: []
   block:
-    - name: Set threads_list from 0 to 2^(log2(ansible_processor_vcpus))
+    - name: Set threads_list from 0 to 2^(log2(ansible_processor_nproc))
       ansible.builtin.set_fact:
         threads_list: "{{ threads_list + [2**item] }}"
-      loop: "{{ range(0, (ansible_processor_vcpus | log(2) | int) + 1) | list }}"
+      loop: "{{ range(0, (ansible_processor_nproc | log(2) | int) + 1) | list }}"
       tags:
         - speedup_threads
         - debug_speedup_threads
@@ -21,10 +21,10 @@
         - speedup_threads
         - debug_speedup_threads
 
-    - name: Fail if last threads_list element is not equal to ansible_processor_vcpus
+    - name: Fail if last threads_list element is not equal to ansible_processor_nproc
       ansible.builtin.fail:
-        msg: "Last threads_list element {{ threads_list[-1] }} is not equal to ansible_processor_vcpus {{ ansible_processor_vcpus }}"
-      when: threads_list[-1] != ansible_processor_vcpus
+        msg: "Last threads_list element {{ threads_list[-1] }} is not equal to ansible_processor_nproc {{ ansible_processor_nproc }}"
+      when: threads_list[-1] != ansible_processor_nproc
       tags:
         - speedup_threads
         - debug_speedup_threads
