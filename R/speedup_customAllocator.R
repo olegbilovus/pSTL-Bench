@@ -5,10 +5,10 @@ theme_set(theme_bw())
 
 source("utils.R")
 
-json_dir_custom_allocator <- "json_data/speedup_customAllocator/custom"
+json_dir_custom_allocator <- "json_data/speedup_customAllocator/ca"
 data_custom <- from_json_dir_data(json_dir_custom_allocator)
 
-json_dir_default_allocator <- "json_data/speedup_customAllocator/default"
+json_dir_default_allocator <- "json_data/speedup_customAllocator/da"
 data_default <- from_json_dir_data(json_dir_default_allocator)
 
 plot_title <- NULL
