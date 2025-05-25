@@ -7,6 +7,8 @@ benchmark:
   out_format: "--benchmark_out_format=json"
   out: "--benchmark_out"
 
+benchmark_global_envs: ""
+
 algorithms:
   - "adjacent_difference"
   - "adjacent_find"

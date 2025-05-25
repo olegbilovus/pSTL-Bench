@@ -88,7 +88,9 @@
         - always
 
   tasks:
-    - name: Benchmark problemSize_time
+    - name: Benchmark problemSize_time double
+      vars:
+        data_type: "double"
       ansible.builtin.include_tasks: "tasks/problemSize_time.yml"
       tags:
         - problemSize_time

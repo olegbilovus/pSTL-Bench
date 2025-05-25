@@ -3,7 +3,8 @@
     bench_name: speedup_customAllocator
     data_dir: "{{ json_data_folder }}/{{ bench_name }}"
     elements: "{{ 2**30 }}"
-    data_type: "/double/{{ elements }}"
+    data_type: "double"
+    data_type_filter: "/{{ data_type }}/{{ elements }}"
     threads: "{{ ansible_processor_nproc }}"
   block:
     - name: Set bench allocators based on build allocators

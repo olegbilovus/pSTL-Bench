@@ -29,7 +29,6 @@ backends:
       flag_select_threads: ""    
       default_allocator: true
       custom_allocator: false
-      float: false
   gccgnu:
     pre_cmd: ". {{ path_bashrc }} &&"
     build:
@@ -45,7 +44,6 @@ backends:
       flag_select_threads: ""    
       default_allocator: false
       custom_allocator: true
-      float: false
   gcchpx:
     pre_cmd: ". {{ path_bashrc }} &&"
     build:
@@ -61,7 +59,6 @@ backends:
       flag_select_threads: "--hpx:threads"    
       default_allocator: true
       custom_allocator: false
-      float: false
   gcctbb:
     pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
     build:
@@ -77,7 +74,6 @@ backends:
       flag_select_threads: ""    
       default_allocator: false
       custom_allocator: true
-      float: false
   icpxtbb:
     pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
     build:
@@ -93,7 +89,6 @@ backends:
       flag_select_threads: ""    
       default_allocator: false
       custom_allocator: true
-      float: false
   nvccuda:
     pre_cmd: ". {{ path_bashrc }} && export PATH=$PATH:{{ nvhpc_sdk_path }} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ nvhpc_sdk_path_lib }} &&"
     build:
@@ -109,7 +104,6 @@ backends:
       flag_select_threads: ""    
       default_allocator: true
       custom_allocator: false
-      float: false
   nvcomp:
     pre_cmd: ". {{ path_bashrc }} && export PATH=$PATH:{{ nvhpc_sdk_path }} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ nvhpc_sdk_path_lib }} &&"
     build:
@@ -125,7 +119,6 @@ backends:
       flag_select_threads: ""    
       default_allocator: false
       custom_allocator: true
-      float: false
   onedplcpu:
     pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh &&"
     build:
@@ -141,7 +134,6 @@ backends:
       flag_select_threads: ""    
       default_allocator: true
       custom_allocator: false
-      float: false
   onedplgpu:
     pre_cmd: ". {{ path_bashrc }} && . /opt/intel/oneapi/setvars.sh && export PATH=$PATH:{{ cuda_path }} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ cuda_path_lib }} &&"
     build:
@@ -157,4 +149,3 @@ backends:
       flag_select_threads: ""    
       default_allocator: true
       custom_allocator: false
-      float: false

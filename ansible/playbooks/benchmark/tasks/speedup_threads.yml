@@ -3,7 +3,8 @@
     bench_name: speedup_threads
     data_dir: "{{ json_data_folder }}/{{ bench_name }}"
     elements: "{{ 2**30 }}"
-    data_type: "/double/{{ elements }}"
+    data_type: "double"
+    data_type_filter: "/{{ data_type }}/{{ elements }}"
     threads_list: []
   block:
     - name: Set threads_list from 0 to 2^(log2(ansible_processor_nproc))
