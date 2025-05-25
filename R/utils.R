@@ -50,3 +50,22 @@ get_shapes <- function(data) {
 
   return(shape_values)
 }
+
+get_seq_name <- function() {
+  return ("GNU-SEQ")
+  
+}
+
+sort_data_seq_first <- function(data) {
+  # Sort the data so that the sequential algorithm is first
+  seq_name <- get_seq_name()
+  
+  # Check if the sequential name exists in the data
+  if (seq_name %in% data$name) {
+    # Move the sequential algorithm to the first position
+    data <- data %>%
+      mutate(name = factor(name, levels = c(get_seq_name(), sort(unique(name)[!unique(name) %in% get_seq_name()]))))
+  }
+  
+  return(data)
+}

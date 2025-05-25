@@ -22,12 +22,16 @@ data <- data %>%
     name = get_name(name),
   )
 
+gpu_names <- c("IntelLLVM-ONEDPL_GPU", "NVHPC-CUDA")
+# Comment out the following line if you want to filter out GPU data
+#data <- data %>%
+#  filter(!name %in% gpu_names)
+
 data <- data %>%
   select(name, elements, real_time)
 
-# Order the data by name
-data <- data %>%
-  mutate(name = factor(name, levels = unique(name)))
+# Order the data by name, make the SEQ the first one
+data <- sort_data_seq_first(data)
 
 shape_values <- get_shapes(data$name)
 

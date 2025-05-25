@@ -9,7 +9,7 @@ json_dir <- "json_data/speedup_threads/for_each-k1000"
 data <- from_json_dir_data(json_dir)
 
 plot_title <- NULL
-SEQ_NAME <- "GNU-SEQ"
+SEQ_NAME <- get_seq_name()
 
 # Extract the number of elements from the 'name' column
 data <- data %>%
