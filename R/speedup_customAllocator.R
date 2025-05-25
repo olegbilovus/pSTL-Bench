@@ -71,10 +71,10 @@ p <- ggplot(speedup_data, aes(x = algorithm, y = speedup, fill = name)) +
   geom_text(
     aes(label = speedup_label),
     position = position_dodge(width = 0.9), # Position text to match the bars
-    vjust = 0, # Center the text on the bar
+    vjust = 0.3, # Center the text on the bar
     hjust = -0.2, # Place text above the bars
     angle = 90, # Rotate the text vertically
-    size = 3,
+    size = 4,
   ) +
   scale_y_continuous(
     breaks = seq(0, max(speedup_data$speedup, na.rm = TRUE) + 0.2, by = 0.2), # Extend y-axis to accommodate text
@@ -96,7 +96,9 @@ p <- ggplot(speedup_data, aes(x = algorithm, y = speedup, fill = name)) +
     legend.background = element_rect(fill = "white", color = scales::alpha("black", 0.5)), # Add a border around the legend
     legend.margin = margin(5, 5, 5, 5), # Add some padding inside the legend box
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5), # Add a border around the plot
-    plot.title = element_text(hjust = 0.5) # Center the title
+    plot.title = element_text(hjust = 0.5), # Center the title
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 14),
   )
 
 p

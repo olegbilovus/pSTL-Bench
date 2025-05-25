@@ -97,7 +97,9 @@ p <- ggplot(speedup_data, aes(x = used_threads, y = speedup, color = name, shape
     panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"),
     legend.background = element_rect(fill = scales::alpha("white", 0.75), color = scales::alpha("black", 0.5)), # Add a border around the legend
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5), # Add a border around the plot
-    plot.title = element_text(hjust = 0.5) # Center the title
+    plot.title = element_text(hjust = 0.5), # Center the title
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 14),
   )
 
 reposition_legend(p, "top left", offset = 0.02)
