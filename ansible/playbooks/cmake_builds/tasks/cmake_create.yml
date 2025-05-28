@@ -7,22 +7,21 @@
     - name: Create default allocator double
       ansible.builtin.shell:
         cmd: >
-          {{ item.1.value.pre_cmd }}
+          {{ item.value.pre_cmd }}
           cmake {{ cmake.release }}
-          {{ cmake.backend }}={{ item.1.value.build.backend }}
-          {{ cmake.compiler }}='{{ item.1.value.build.compiler }}'
-          {{ cmake.kit }}={{ item.0 }}
+          {{ cmake.backend }}={{ item.value.build.backend }}
+          {{ cmake.compiler }}={{ item.value.build.compiler }}
           {{ cmake.data_type }}=double
-          {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
-          {{ item.1.value.build.cmake_flags }}
-          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-double
+          {{ cmake.compiler_flags }}='{{ item.value.build.compiler_flags }}'
+          {{ item.value.build.cmake_flags }}
+          -S . -B {{ builds_dir }}/{{ item.key }}-da-double
         chdir: "{{ root }}"
       loop: "{{ cmake_builds }}"
       loop_control:
-        label: "{{ item.1.key }}-k{{ item.0 }}"
+        label: "{{ item.key }}"
       register: _res
       changed_when: _res.rc == 0
-      when: item.1.key in selected_backends
+      when: item.key in selected_backends
       tags:
         - default_allocator
         - double
@@ -30,23 +29,21 @@
     - name: Create custom allocator double
       ansible.builtin.shell:
         cmd: >
-          {{ item.1.value.pre_cmd }}
+          {{ item.value.pre_cmd }}
           cmake {{ cmake.release }}
-          {{ cmake.backend }}={{ item.1.value.build.backend }}
-          {{ cmake.compiler }}='{{ item.1.value.build.compiler }}'
-          {{ cmake.custom_allocator_on }}
-          {{ cmake.kit }}={{ item.0 }}
+          {{ cmake.backend }}={{ item.value.build.backend }}
+          {{ cmake.compiler }}={{ item.value.build.compiler }}
           {{ cmake.data_type }}=double
-          {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
-          {{ item.1.value.build.cmake_flags }}
-          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-double
+          {{ cmake.compiler_flags }}='{{ item.value.build.compiler_flags }}'
+          {{ item.value.build.cmake_flags }}
+          -S . -B {{ builds_dir }}/{{ item.key }}-ca-double
         chdir: "{{ root }}"
       loop: "{{ cmake_builds }}"
       loop_control:
-        label: "{{ item.1.key }}-k{{ item.0 }}"
+        label: "{{ item.key }}"
       register: _res
       changed_when: _res.rc == 0
-      when: item.1.key in selected_backends and item.1.value.build.custom_allocator
+      when: item.key in selected_backends and item.value.build.custom_allocator
       tags:
         - custom_allocator
         - double
@@ -54,22 +51,21 @@
     - name: Create default allocator float
       ansible.builtin.shell:
         cmd: >
-          {{ item.1.value.pre_cmd }}
+          {{ item.value.pre_cmd }}
           cmake {{ cmake.release }}
-          {{ cmake.backend }}={{ item.1.value.build.backend }}
-          {{ cmake.compiler }}='{{ item.1.value.build.compiler }}'
-          {{ cmake.kit }}={{ item.0 }}
+          {{ cmake.backend }}={{ item.value.build.backend }}
+          {{ cmake.compiler }}={{ item.value.build.compiler }}
           {{ cmake.data_type }}=float
-          {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
-          {{ item.1.value.build.cmake_flags }}
-          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-da-float
+          {{ cmake.compiler_flags }}='{{ item.value.build.compiler_flags }}'
+          {{ item.value.build.cmake_flags }}
+          -S . -B {{ builds_dir }}/{{ item.key }}-da-float
         chdir: "{{ root }}"
       loop: "{{ cmake_builds }}"
       loop_control:
-        label: "{{ item.1.key }}-k{{ item.0 }}"
+        label: "{{ item.key }}"
       register: _res
       changed_when: _res.rc == 0
-      when: item.1.key in selected_backends and item.1.value.build.build_float
+      when: item.key in selected_backends and item.value.build.build_float
       tags:
         - default_allocator
         - float
@@ -77,23 +73,22 @@
     - name: Create custom allocator float
       ansible.builtin.shell:
         cmd: >
-          {{ item.1.value.pre_cmd }}
+          {{ item.value.pre_cmd }}
           cmake {{ cmake.release }}
-          {{ cmake.backend }}={{ item.1.value.build.backend }}
-          {{ cmake.compiler }}='{{ item.1.value.build.compiler }}'
+          {{ cmake.backend }}={{ item.value.build.backend }}
+          {{ cmake.compiler }}={{ item.value.build.compiler }}
           {{ cmake.custom_allocator_on }}
-          {{ cmake.kit }}={{ item.0 }}
           {{ cmake.data_type }}=float
-          {{ cmake.compiler_flags }}='{{ item.1.value.build.compiler_flags }}'
-          {{ item.1.value.build.cmake_flags }}
-          -S . -B {{ builds_dir }}/{{ item.1.key }}-k{{ item.0 }}-ca-float
+          {{ cmake.compiler_flags }}='{{ item.value.build.compiler_flags }}'
+          {{ item.value.build.cmake_flags }}
+          -S . -B {{ builds_dir }}/{{ item.key }}-ca-float
         chdir: "{{ root }}"
       loop: "{{ cmake_builds }}"
       loop_control:
-        label: "{{ item.1.key }}-k{{ item.0 }}"
+        label: "{{ item.key }}"
       register: _res
       changed_when: _res.rc == 0
-      when: item.1.key in selected_backends and item.1.value.build.build_float and item.1.value.build.custom_allocator
+      when: item.key in selected_backends and item.value.build.build_float and item.value.build.custom_allocator
       tags:
         - custom_allocator
         - float

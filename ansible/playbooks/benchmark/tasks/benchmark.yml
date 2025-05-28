@@ -28,7 +28,8 @@
           {{ item.1.value.pre_cmd }}
           {{ item.1.value.bench.env_select_threads + '=' + (threads | string)  if item.1.value.bench.env_select_threads else '' }}
           {{ benchmark_global_envs }}
-          {{ builds_dir }}/{{ item.1.key }}-k{{ kit }}-da-{{ data_type }}/{{ project_name }}
+          {{ benchmark.kit_env + '=' + (kit | string) if item.0 == 'for_each' else '' }}
+          {{ builds_dir }}/{{ item.1.key }}-da-{{ data_type }}/{{ project_name }}
           {{ benchmark.filter }}='{{ item.1.value.bench.filter_name + item.0}}{{ data_type_filter }}'
           {{ benchmark.min_time }}
           {{ benchmark.format }}
@@ -53,7 +54,8 @@
           {{ item.1.value.pre_cmd }}
           {{ item.1.value.bench.env_select_threads + '=' + (threads | string)  if item.1.value.bench.env_select_threads else '' }}
           {{ benchmark_global_envs }}
-          {{ builds_dir }}/{{ item.1.key }}-k{{ kit }}-ca-{{ data_type }}/{{ project_name }}
+          {{ benchmark.kit_env + '=' + (kit | string) if item.0 == 'for_each' else '' }}
+          {{ builds_dir }}/{{ item.1.key }}-ca-{{ data_type }}/{{ project_name }}
           {{ benchmark.filter }}='{{ item.1.value.bench.filter_name + item.0}}{{ data_type_filter }}'
           {{ benchmark.min_time }}
           {{ benchmark.format }}

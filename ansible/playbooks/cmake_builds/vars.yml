@@ -3,6 +3,5 @@ cmake:
   backend: "-DPSTL_BENCH_BACKEND"
   compiler: "-DCMAKE_CXX_COMPILER"
   compiler_flags: "-DCMAKE_CXX_FLAGS"
-  kit: "-DPSTL_BENCH_DEFAULT_FOR_EACH_KERNEL_ITS"
   custom_allocator_on: "-DPSTL_BENCH_USE_PAR_ALLOC=ON"
   data_type: "-DPSTL_BENCH_DATA_TYPE"

@@ -6,6 +6,7 @@ benchmark:
   format: "--benchmark_format=console"
   out_format: "--benchmark_out_format=json"
   out: "--benchmark_out"
+  kit_env: "PSTL_BENCH_FOR_EACH_KERNEL_ITS"
 
 benchmark_global_envs: ""
 
