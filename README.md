@@ -7,10 +7,48 @@ desired backend for execution during compile time.
 
 ## Table of Contents
 
+- [Fork Overview](#fork-overview)
+  - [Ansible Playbooks](#ansible-playbooks)
 - [Introduction](#introduction)
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
+
+# Fork Overview
+
+This repository is a fork of [pSTL-Bench by parlab-tuwien](https://github.com/parlab-tuwien/pSTL-Bench), originally introduced in the paper:
+
+> Ruben Laso, Diego Krupitza, and Sascha Hunold. 2024,
+> **Exploring Scalability in C++ Parallel STL Implementations**,
+> *In Proceedings of the 53rd International Conference on Parallel Processing (ICPP '24)*.
+> [DOI: 10.1145/3673038.3673065](https://doi.org/10.1145/3673038.3673065)
+
+This fork introduces support for **oneDPL** backend and several enhancements to improve the reproducibility of the benchmark suite:
+
+* **Ansible playbooks** for automating the setup of dependencies, builds, and benchmark execution across different systems.
+* **R scripts** for automated generation of plots and analysis of benchmark results.
+* **Docs** for comprehensive documentation of the benchmarking process, including setup, execution, and analysis.
+
+These additions aim to streamline the benchmarking workflow and ensure consistent, reproducible results across diverse environments.
+
+## Ansible Playbooks
+There are three Ansible playbooks available in the `ansible/playbooks` directory:
+- `install_dependencies.yml`: Installs the necessary dependencies for the benchmark suite.
+- `cmake_builds.yml`: Builds the benchmark suite using CMake with the specified backend and compiler.
+- `benchmark.yml`: Executes the benchmark suite and collects results.
+
+The playbooks were tested on Ubuntu 24.04 and 25.04 and should work on any Debian-based distribution.
+
+The original fork used CSV files for results, but this fork has been modified to use JSON files because Google Benchmark deprecated CSV output in favor of JSON output.
+
+You can run the playbooks using the CLI or by using [Semaphore UI](https://semaphoreui.com/). There is a Semaphore UI project available at [ansible/semaphore_ui_project.json](ansible/semaphore_ui_project.json)
+
+The Semaphore UI project also shows every needed variable for Ansible playbooks, so you can easily set them up in the UI. There are some task denominated as *debug* that will print commands to the console, so you can see what is being executed in the background when a playbook is ran and how to run it manually if you prefer not to use the UI.
+
+### Semaphore UI screenshots
+| ![ Benchmark tab ](/docs/images/semaphore_ui/benchmark_tab.png) | ![ Debug cmake output ](/docs/images/semaphore_ui/debug_cmake_output.png) |
+|:--:| :--:|
+| [*Semaphore UI - Benchmark tab*](/docs/images/semaphore_ui/benchmark_tab.png) | [*Semaphore UI - Debug CMake output*](/docs/images/semaphore_ui/debug_cmake_output.png) |
 
 ## Introduction
 
