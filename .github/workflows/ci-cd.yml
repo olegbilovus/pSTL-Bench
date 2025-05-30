@@ -1,7 +1,13 @@
 name: CI/CD Pipeline
 
 on:
-  push: { } # Run this workflow on push events (all branches)
+  push:
+    paths: 
+      - '.github/workflows/ci-cd.yml'
+      - 'cmake/**'
+      - 'include/**'
+      - 'src/**'
+      - 'CMakeLists.txt'
 
 jobs:
   builds-gcc:
