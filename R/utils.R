@@ -21,7 +21,6 @@ from_json_dir_data <- function(json_dir) {
   return(data)
 }
 
-
 get_name <- function(name) {
   # Extract the name for the plot
   name <- str_split_fixed(name, "/", 2)[, 1]
@@ -41,14 +40,23 @@ get_algorithm <- function(name, kernel_its) {
   return(algorithm)
 }
 
-get_shapes <- function(data) {
+get_shapes <- function(data, skip = 0) {
   # Dynamically generate shapes based on the number of unique names
   unique_data <- unique(data)
   num_unique_data <- length(unique_data)
-
-  shape_values <- c(15:25, 0:20)[1:num_unique_data]
+  all_shapes <- c(15:25, 0:20)
+  shape_values <- all_shapes[(1 + skip):(num_unique_data + skip)]
 
   return(shape_values)
+}
+
+get_palette <- function(data, skip = 0) {
+  # Dynamically generate a color palette and optionally skip the first color (e.g., red)
+  unique_data <- unique(data)
+  num_unique_data <- length(unique_data)
+  pal <- scales::hue_pal()(num_unique_data + skip)
+  pal <- pal[(1 + skip):(num_unique_data + skip)]
+  return(pal)
 }
 
 get_seq_name <- function() {
@@ -65,6 +73,10 @@ sort_data_seq_first <- function(data) {
     # Move the sequential algorithm to the first position
     data <- data %>%
       mutate(name = factor(name, levels = c(get_seq_name(), sort(unique(name)[!unique(name) %in% get_seq_name()]))))
+  } else {
+    # If the sequential name does not exist, just sort the data by name
+    data <- data %>%
+      mutate(name = factor(name, levels = sort(unique(name))))
   }
   
   return(data)

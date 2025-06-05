@@ -45,8 +45,7 @@ data <- data %>%
   select(name, elements, real_time, algorithm, allocator)
 
 # Order the data by name
-data <- data %>%
-  mutate(name = factor(name, levels = unique(name)))
+data <- sort_data_seq_first(data)
 
 # Ensure all combinations of algorithm and name are present, filling missing values with NA
 speedup_data <- data %>%
@@ -63,6 +62,8 @@ speedup_data <- speedup_data %>%
     speedup_label = ifelse(is.na(speedup), "N/A", sprintf("%.2f", speedup)), # Create a label for speedup
     speedup = ifelse(is.na(speedup), 0, speedup) # Replace NA with 0 for plotting
   )
+
+palette <- get_palette(speedup_data$name, skip = 2)
 
 # Create a bar plot for the aggregated speedup
 p <- ggplot(speedup_data, aes(x = algorithm, y = speedup, fill = name)) +
@@ -85,7 +86,7 @@ p <- ggplot(speedup_data, aes(x = algorithm, y = speedup, fill = name)) +
   scale_x_discrete(name = "Algorithm") +
   scale_fill_manual(
     name = NULL,
-    values = scales::hue_pal()(length(unique(speedup_data$name))) # Assign distinct colors to names
+    values = palette,
   ) +
   labs(title = plot_title) +
   theme(

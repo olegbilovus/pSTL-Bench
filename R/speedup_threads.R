@@ -41,26 +41,20 @@ seq_data <- data %>%
 
 # Remove the SEQ_NAME from the data
 data <- data %>%
-  filter(name != SEQ_NAME) %>%
-  mutate(
-    name = factor(name, levels = unique(name)),
-  )
+  filter(name != SEQ_NAME)
 
 # Select relevant columns
 data <- data %>%
   select(name, real_time, used_threads)
 
 # Order the data by name
-data <- data %>%
-  mutate(name = factor(name, levels = unique(name)))
+data <- sort_data_seq_first(data)
 
 # Calculate speedup
 speedup_data <- data %>%
   mutate(
     speedup = seq_data$real_time / real_time,
   )
-
-shape_values <- get_shapes(speedup_data$name)
 
 min_threads <- min(speedup_data$used_threads)
 max_threads <- max(speedup_data$used_threads)
@@ -73,6 +67,9 @@ ideal_line_data <- data.frame(
 ) %>%
   filter(speedup <= max_speedup + 2) # Limit the ideal line to max_speedup
 
+palette <- get_palette(speedup_data$name, skip = 1)
+shape_values <- get_shapes(speedup_data$name, skip = 1)
+
 p <- ggplot(speedup_data, aes(x = used_threads, y = speedup, color = name, shape = name)) +
   geom_line(linewidth = 0.7) +
   geom_point(size = 3, stroke = 1) +
@@ -83,7 +80,7 @@ p <- ggplot(speedup_data, aes(x = used_threads, y = speedup, color = name, shape
     labels = 2^seq(floor(log2(min_threads)), ceiling(log2(max_threads))), # Format x-axis labels as powers of 2
     name = "#Threads"
   ) +
-  scale_color_discrete(name = NULL) + # Remove the legend title for color
+  scale_color_manual(values = palette, name = NULL) + # Remove the legend title for color
   scale_shape_manual(
     name = NULL, # Remove the legend title for shape
     values = shape_values,
