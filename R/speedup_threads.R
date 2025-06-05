@@ -54,6 +54,7 @@ data <- sort_data_seq_first(data)
 speedup_data <- data %>%
   mutate(
     speedup = seq_data$real_time / real_time,
+    efficiency = speedup / used_threads,
   )
 
 min_threads <- min(speedup_data$used_threads)
@@ -100,6 +101,8 @@ p <- ggplot(speedup_data, aes(x = used_threads, y = speedup, color = name, shape
   )
 
 reposition_legend(p, "top left", offset = 0.02)
+
+print(speedup_data)
 
 # interactive plot
 # pacman::p_load(plotly)
