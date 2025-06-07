@@ -68,14 +68,14 @@ palette <- get_palette(speedup_data$name, skip = 2)
 # Create a bar plot for the aggregated speedup
 p <- ggplot(speedup_data, aes(x = algorithm, y = speedup, fill = name)) +
   geom_bar(stat = "identity", position = "dodge", color = "black") + # Create grouped bars for each name
-  geom_hline(yintercept = 1.0, linetype = "dashed", color = "black", linewidth = 0.7) + # Add a horizontal line at y = 1.0
+  geom_hline(yintercept = 1.0, linetype = "dashed", color = "black", linewidth = 1) + # Add a horizontal line at y = 1.0
   geom_text(
     aes(label = speedup_label),
     position = position_dodge(width = 0.9), # Position text to match the bars
-    vjust = 0.3, # Center the text on the bar
+    vjust = 0.4, # Center the text on the bar
     hjust = -0.2, # Place text above the bars
     angle = 90, # Rotate the text vertically
-    size = 4,
+    size = 4.8,
   ) +
   scale_y_continuous(
     breaks = seq(0, max(speedup_data$speedup, na.rm = TRUE) + 0.2, by = 0.2), # Extend y-axis to accommodate text
@@ -97,9 +97,11 @@ p <- ggplot(speedup_data, aes(x = algorithm, y = speedup, fill = name)) +
     legend.background = element_rect(fill = "white", color = scales::alpha("black", 0.5)), # Add a border around the legend
     legend.margin = margin(5, 5, 5, 5), # Add some padding inside the legend box
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5), # Add a border around the plot
-    plot.title = element_text(hjust = 0.5), # Center the title
-    axis.text = element_text(size = 12),
-    axis.title = element_text(size = 14),
+    plot.title = element_text(hjust = 0.5, size = 15, face = "bold"),      
+    axis.text.x = element_text(size = 12.3),
+    axis.text.y = element_text(size = 14),
+    axis.title = element_text(size = 16),                   
+    legend.text = element_text(size = 11, face = "bold"),
   )
 
 p

@@ -5,7 +5,7 @@ theme_set(theme_bw())
 
 source("utils.R")
 
-json_dir <- "json_data/speedup_threads/for_each-k1000"
+json_dir <- "json_data/speedup_threads/sort/"
 data <- from_json_dir_data(json_dir)
 
 plot_title <- NULL
@@ -72,10 +72,16 @@ palette <- get_palette(speedup_data$name, skip = 1)
 shape_values <- get_shapes(speedup_data$name, skip = 1)
 
 p <- ggplot(speedup_data, aes(x = used_threads, y = speedup, color = name, shape = name)) +
-  geom_line(linewidth = 0.7) +
-  geom_point(size = 3, stroke = 1) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 6, stroke = 2) +
   # Add the ideal speedup line (y = x)
-  geom_line(data = ideal_line_data, aes(x = used_threads, y = speedup), inherit.aes = FALSE, color = "black") +
+  geom_line(data = ideal_line_data, aes(x = used_threads, y = speedup), inherit.aes = FALSE, color = "black", linewidth = 2) +
+  add_ideal_annotation(
+    min_threads = min_threads,
+    max_threads = max_threads,
+    max_speedup = max_speedup + 2,
+    position = "topright", # Position the annotation in the desired top corner
+  ) +
   scale_x_log10( # Use a logarithmic scale for the x-axis
     breaks = 2^seq(floor(log2(min_threads)), ceiling(log2(max_threads))), # Powers of 2
     labels = 2^seq(floor(log2(min_threads)), ceiling(log2(max_threads))), # Format x-axis labels as powers of 2
@@ -95,12 +101,13 @@ p <- ggplot(speedup_data, aes(x = used_threads, y = speedup, color = name, shape
     panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"),
     legend.background = element_rect(fill = scales::alpha("white", 0.75), color = scales::alpha("black", 0.5)), # Add a border around the legend
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5), # Add a border around the plot
-    plot.title = element_text(hjust = 0.5), # Center the title
-    axis.text = element_text(size = 12),
-    axis.title = element_text(size = 14),
+    plot.title = element_text(hjust = 0.5, size = 25, face = "bold"),
+    axis.text = element_text(size = 26),                    
+    axis.title = element_text(size = 28),                   
+    legend.text = element_text(size = 20, face = "bold"),
   )
 
-reposition_legend(p, "top left", offset = 0.02)
+reposition_legend(p, "top left", offset = 0.02) # Re-position the legend to the desired top corner
 
 print(speedup_data)
 

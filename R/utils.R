@@ -81,3 +81,39 @@ sort_data_seq_first <- function(data) {
   
   return(data)
 }
+
+add_ideal_annotation <- function(min_threads, max_threads, max_speedup, 
+                                position = c("topright", "topleft"), 
+                                label = "Ideal", 
+                                seg_len = 0.3, 
+                                y_offset = 0.01, 
+                                size = 8) {
+  position <- match.arg(position)
+  # Helper for log interpolation
+  log_interp <- function(a, b, frac) exp(log(a) + frac * (log(b) - log(a)))
+  if (position == "topright") {
+    # Place segment and text at 80% and 90% of the log10 axis range
+    x_start <- log_interp(min_threads, max_threads, 0.80)
+    x_end   <- log_interp(min_threads, max_threads, 0.90)
+    x_text  <- log_interp(min_threads, max_threads, 0.93)
+    y_pos   <- max_speedup * (1 + y_offset)
+    hjust   <- 0
+  } else if (position == "topleft") {
+    x_start <- min_threads * (1 + 0.05)
+    x_end   <- min_threads * (1 + seg_len)
+    x_text  <- x_end
+    y_pos   <- max_speedup * (1 + y_offset)
+    hjust   <- 0
+  }
+  list(
+    annotate("segment",
+      x = x_start, xend = x_end,
+      y = y_pos, yend = y_pos,
+      color = "black", linewidth = 2
+    ),
+    annotate("text",
+      x = x_text, y = y_pos,
+      label = label, hjust = hjust, vjust = 0.5, size = size, fontface = "bold", color = "black"
+    )
+  )
+}
