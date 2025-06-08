@@ -7,14 +7,20 @@ desired backend for execution during compile time.
 
 ## Table of Contents
 
+- [pSTL-Bench](#pstl-bench)
+  - [Table of Contents](#table-of-contents)
 - [Fork Overview](#fork-overview)
   - [Ansible Playbooks](#ansible-playbooks)
+    - [Semaphore UI screenshots](#semaphore-ui-screenshots)
   - [R Scripts](#r-scripts)
+    - [R Scripts screenshots](#r-scripts-screenshots)
 - [Introduction](#introduction)
 - [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
+- [Getting Started](#getting-started)
+- [USAGE](#usage)
 - [Adding a new backend](#adding-a-new-backend)
+- [Citation](#citation)
+- [Dependencies](#dependencies)
 
 # Fork Overview
 
@@ -73,11 +79,11 @@ You can customize the scripts to analyze the results in different ways, such as 
 
 ### R Scripts screenshots
 
-| ![ R - problemSize_time-for_each-k1000 ](/images/R/problemSize_time-for_each-k1000.svg) | ![ R - gpu_problemSize_time-for_each-k1000 ](/images/R/gpu_problemSize_time-for_each-k1000.svg) |
-| :-------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------: |
-| [_R - problemSize_time-for_each-k1000_](/images/R/problemSize_time-for_each-k1000.svg)  | [_R - gpu_problemSize_time-for_each-k1000_](/images/R/gpu_problemSize_time-for_each-k1000.svg)  |
-|         ![ R - speedup_customAllocator ](/images/R/speedup_customAllocator.svg)         |      ![ R - speedup_threads-for_each-k1000 ](/images/R/speedup_threads-for_each-k1000.svg)      |
-|         [_R - speedup_customAllocator_](/images/R/speedup_customAllocator.svg)          |      [_R - speedup_threads-for_each-k1000_](/images/R/speedup_threads-for_each-k1000.svg)       |
+| ![ R - problemSize_time-for_each-k1000 ](/images/R/problemSize_time-for_each-k1000.jpeg) | ![ R - gpu_problemSize_time-for_each-k1000 ](/images/R/problemSize_time_gpu-for_each-k1000.jpeg) |
+| :--------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------: |
+| [_R - problemSize_time-for_each-k1000_](/images/R/problemSize_time-for_each-k1000.jpeg)  | [_R - gpu_problemSize_time-for_each-k1000_](/images/R/problemSize_time_gpu-for_each-k1000.jpeg)  |
+|         ![ R - speedup_customAllocator ](/images/R/speedup_customAllocator.jpeg)         |      ![ R - speedup_threads-for_each-k1000 ](/images/R/speedup_threads-for_each-k1000.jpeg)      |
+|          [_R - speedup_customAllocator_](/images/R/speedup_customAllocator.svg)          |      [_R - speedup_threads-for_each-k1000_](/images/R/speedup_threads-for_each-k1000.jpeg)       |
 
 # Introduction
 
