@@ -83,7 +83,7 @@ You can customize the scripts to analyze the results in different ways, such as 
 | :--------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------: |
 | [_R - problemSize_time-for_each-k1000_](/images/R/problemSize_time-for_each-k1000.jpeg)  | [_R - problemSize_time_gpu-for_each-k1000_](/images/R/problemSize_time_gpu-for_each-k1000.jpeg)  |
 |         ![ R - speedup_customAllocator ](/images/R/speedup_customAllocator.jpeg)         |      ![ R - speedup_threads-for_each-k1000 ](/images/R/speedup_threads-for_each-k1000.jpeg)      |
-|          [_R - speedup_customAllocator_](/images/R/speedup_customAllocator.svg)          |      [_R - speedup_threads-for_each-k1000_](/images/R/speedup_threads-for_each-k1000.jpeg)       |
+|          [_R - speedup_customAllocator_](/images/R/speedup_customAllocator.jpeg)          |      [_R - speedup_threads-for_each-k1000_](/images/R/speedup_threads-for_each-k1000.jpeg)       |
 
 # Introduction
 
