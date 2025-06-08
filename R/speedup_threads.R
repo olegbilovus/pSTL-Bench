@@ -99,7 +99,7 @@ p <- ggplot(
   labs(
     title = plot_title,
     x = "#Threads",
-    y = paste("Speedup (vs", SEQ_NAME, ")")
+    y = paste("Speedup (vs", paste(SEQ_NAME, ")", sep = ""))
   ) +
   get_theme(legend_position = "top-right") # Adjust legend position: "top-right" or "top-left"
 

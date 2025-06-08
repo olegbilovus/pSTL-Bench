@@ -75,7 +75,7 @@ p <- ggplot(
   theme(
     panel.grid.minor = element_blank(),
     panel.grid.major = element_line(color = "grey", linewidth = 0.25, linetype = "dashed"),
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
     plot.title = element_text(hjust = 0.5, size = 25, face = "bold"),
     axis.line = element_blank(),
     axis.ticks = element_line(color = "black"),
