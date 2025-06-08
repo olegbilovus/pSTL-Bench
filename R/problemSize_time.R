@@ -1,73 +1,72 @@
+# Load required packages
 install.packages("pacman", repos = "http://cran.us.r-project.org")
 library(pacman)
-pacman::p_load(rio, ggplot2, tidyverse, lemon)
+p_load(ggplot2, tidyverse)
+
+# Set theme
 theme_set(theme_bw())
 
+# Load helper functions
 source("utils.R")
 
-json_dir <- "json_data/problemSize_time_gpu-FvsD/for_each-k1000/"
-data <- from_json_dir_data(json_dir)
-
+# Define paths and constants
+json_dir <- "json_data/problemSize_time/for_each-k1"
 plot_title <- NULL
 
-# Extract the number of elements from the 'name' column
-data <- data %>%
-  mutate(
-    elements = get_elements(name),
-  )
-
-# Extract the name for the plot
-data <- data %>%
-  mutate(
-    name = get_name(name),
-  )
-
 gpu_names <- c("IntelLLVM-ONEDPL_GPU", "NVHPC-CUDA")
-# Comment out the following line if you want to filter out GPU data
-#data <- data %>%
-#  filter(!name %in% gpu_names)
+# Load and preprocess data
+data <- from_json_dir_data(json_dir) %>%
+  mutate(elements = get_elements(name)) %>%
+  mutate(name = get_name(name)) %>%
+  # Comment out the following line if you want to filter out GPU data
+  filter(!name %in% gpu_names) %>%
+  select(name, elements, real_time) %>%
+  sort_data_seq_first()
 
-data <- data %>%
-  select(name, elements, real_time)
-
-# Order the data by name, make the SEQ the first one
-data <- sort_data_seq_first(data)
-
+palette <- get_palette(data$name)
 shape_values <- get_shapes(data$name)
 
+
 # Plot the data with log2 for x-axis and log10 for y-axis, with custom labels
-p <- ggplot(data, aes(x = log2(elements), y = log10(real_time), color = name, shape = name)) +
+p <- ggplot(
+  data,
+  aes(x = log2(elements), y = log10(real_time), color = name, shape = name)
+) +
   geom_line(linewidth = 1) +
   geom_point(size = 6, stroke = 2) +
   scale_x_continuous(
     breaks = seq(0, max(log2(as.numeric(data$elements))), by = 5), # Add more x-axis labels
     labels = scales::math_format(2^.x), # Format x-axis labels as 2^
-    name = "Problem size (#elements)"
   ) +
   scale_y_continuous(
     breaks = seq(0, max(log10(data$real_time)), by = 2), # Add more y-axis labels
     labels = scales::math_format(10^.x), # Format y-axis labels as 10^
-    name = "Time (ns)"
   ) +
-  scale_color_discrete(name = NULL) + # Remove the legend title for color
+  scale_color_manual(
+    name = NULL,
+    values = palette,
+  ) +
   scale_shape_manual(
-    name = NULL, # Remove the legend title for shape
+    name = NULL,
     values = shape_values,
+    guide = guide_legend(
+      override.aes = list(size = 4.5) # smaller shape size in the legend
+    )
   ) +
-  labs(title = plot_title) +
-  theme(
-    panel.grid.minor = element_blank(),
-    panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"),
-    legend.background = element_rect(fill = scales::alpha("white", 0.75), color = scales::alpha("black", 0.5)), # Add a border around the legend
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5), # Add a border around the plot
-    plot.title = element_text(hjust = 0.5, size = 25, face = "bold"),      
-    axis.text = element_text(size = 26),                    
-    axis.title = element_text(size = 28),                   
-    legend.text = element_text(size = 20, face = "bold"),                  
-  )
+  labs(
+    title = plot_title,
+    x = "Problem size (#elements)",
+    y = "Time (ns)"
+  ) +
+  get_theme(legend_position = "top-left")
 
-reposition_legend(p, "top left", offset = 0.02)
+plot_width <- 8
+plot_height <- 6
 
-# interactive plot
-# pacman::p_load(plotly)
-# ggplotly(p)
+show_plot_with_size(p, width = plot_width, height = plot_height)
+
+filename <- get_plot_filename(json_dir)
+save_to_cairo_pdf(p, filename, width = plot_width, height = plot_height)
+
+# Save the plot to a PDF file and close the window if open
+dev.off()

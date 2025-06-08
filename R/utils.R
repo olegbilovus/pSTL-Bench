@@ -66,7 +66,7 @@ get_seq_name <- function() {
 sort_data_seq_first <- function(data) {
   # Sort the data so that the sequential algorithm is first
   seq_name <- get_seq_name()
-  
+
   # Check if the sequential name exists in the data
   if (seq_name %in% data$name) {
     # Move the sequential algorithm to the first position
@@ -77,8 +77,48 @@ sort_data_seq_first <- function(data) {
     data <- data %>%
       mutate(name = factor(name, levels = sort(unique(name))))
   }
-  
+
   return(data)
+}
+
+get_theme <- function(legend_position = "top-right") {
+  # check if the legend position is valid
+  if (!legend_position %in% c("top-left", "top-right")) {
+    stop("Invalid legend position. Use 'top-left' or 'top-right'.")
+  }
+
+  if (legend_position == "top-left") {
+    legend_position_inside <- c(0.02, 0.98) # top-left corner
+    legend_justification <- c("left", "top")
+  } else {
+    legend_position_inside <- c(0.98, 0.98) # top-right corner
+    legend_justification <- c("right", "top")
+  }
+
+  # Define the ggplot theme
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+    plot.title = element_text(hjust = 0.5, size = 25, face = "bold"),
+    axis.line = element_blank(),
+    axis.ticks = element_line(color = "black"),
+    axis.ticks.length = unit(-0.25, "cm"),
+    axis.text = element_text(size = 26, colour = "black"),
+    axis.title = element_text(size = 28),
+    legend.text = element_text(size = 18, face = "bold"),
+    legend.key.width = unit(1.5, "cm"), # helps prevent label crowding
+    legend.key.height = unit(0.4, "cm"), # keep key boxes compact
+    legend.margin = margin(5, 5, 5, 5),
+    legend.position = "inside",
+    legend.position.inside = legend_position_inside,
+    legend.justification = legend_justification,
+    legend.background = element_rect(
+      fill = alpha("white", 0.5),
+      color = "black",
+      linewidth = 0.5
+    )
+  )
 }
 
 show_plot_with_size <- function(p, width = 6, height = 8) {

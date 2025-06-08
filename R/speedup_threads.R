@@ -85,7 +85,6 @@ p <- ggplot(
   scale_x_log10(
     breaks = 2^seq(floor(log2(min_threads)), ceiling(log2(max_threads))),
     labels = 2^seq(floor(log2(min_threads)), ceiling(log2(max_threads))),
-    name = "#Threads"
   ) +
   scale_color_manual(
     name = NULL,
@@ -100,6 +99,7 @@ p <- ggplot(
   ) +
   labs(
     title = plot_title,
+    x = "#Threads",
     y = paste("Speedup (vs", SEQ_NAME, ")")
   ) +
   theme(
