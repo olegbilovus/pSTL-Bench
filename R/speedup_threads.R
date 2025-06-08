@@ -101,7 +101,7 @@ p <- ggplot(
     x = "#Threads",
     y = paste("Speedup (vs", SEQ_NAME, ")")
   ) +
-  get_theme(legend_position = "top-right")
+  get_theme(legend_position = "top-right") # Adjust legend position: "top-right" or "top-left"
 
 plot_width <- 8
 plot_height <- 6
