@@ -84,7 +84,7 @@ p <- ggplot(
     axis.text = element_text(size = 11, colour = "black"),
     axis.text.x = element_text(size = 12.3),
     axis.text.y = element_text(size = 14),
-    legend.text = element_text(size = 18, face = "bold"),
+    legend.text = element_text(size = 18),
     legend.key.width = unit(0.5, "cm"), # helps prevent label crowding
     legend.key.height = unit(0.4, "cm"), # keep key boxes compact
     legend.margin = margin(5, 5, 5, 5),
