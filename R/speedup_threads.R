@@ -114,6 +114,6 @@ reposition_legend(p, "top left", offset = 0.02)
 
 print(speedup_data)
 
-# interactive plot
-# pacman::p_load(plotly)
+# Optional: interactive plot
+# p_load(plotly)
 # ggplotly(p)
