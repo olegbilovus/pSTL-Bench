@@ -1,7 +1,7 @@
 # Load required packages
 install.packages("pacman", repos = "http://cran.us.r-project.org")
 library(pacman)
-p_load(rio, ggplot2, tidyverse, lemon)
+p_load(ggplot2, tidyverse)
 
 # Set theme
 theme_set(theme_bw())
@@ -10,7 +10,7 @@ theme_set(theme_bw())
 source("utils.R")
 
 # Define paths and constants
-json_dir <- "json_data/speedup_threads/sort/"
+json_dir <- "json_data/speedup_threads/for_each-k1"
 plot_title <- NULL
 SEQ_NAME <- get_seq_name()
 
@@ -75,45 +75,69 @@ color_values <- c("Ideal" = "black", named_palette)
 shape_values_all <- c(setNames(shape_values, names(named_palette)), "Ideal" = NA)
 linetype_values <- c("Ideal" = "solid", setNames(rep("solid", length(named_palette)), names(named_palette)))
 
-# Final plot with unified aes() and only one legend
+# Plot
 p <- ggplot(
-  bind_rows(speedup_data, ideal_line_data), # Combine for consistent aesthetics
+  bind_rows(speedup_data, ideal_line_data),
   aes(x = used_threads, y = speedup, color = name, shape = name, linetype = name)
 ) +
   geom_line(data = speedup_data, linewidth = 1) +
   geom_point(data = speedup_data, size = 6, stroke = 2) +
-  geom_line(data = ideal_line_data, linewidth = 1.6) +
+  geom_line(data = ideal_line_data, linewidth = 1) +
   scale_x_log10(
     breaks = 2^seq(floor(log2(min_threads)), ceiling(log2(max_threads))),
     labels = 2^seq(floor(log2(min_threads)), ceiling(log2(max_threads))),
     name = "#Threads"
   ) +
-  scale_color_manual(name = NULL, values = color_values) +
-  scale_shape_manual(
-    name = NULL, values = shape_values_all,
-    guide = guide_legend(override.aes = list(shape = c(shape_values, NA)))
+  scale_color_manual(
+    name = NULL,
+    values = color_values
   ) +
-  scale_linetype_manual(name = NULL, values = linetype_values) +
+  scale_shape_manual(
+    name = NULL,
+    values = shape_values_all,
+    guide = guide_legend(
+      override.aes = list(size = 4.5) # smaller shape size in the legend
+    )
+  ) +
+  scale_linetype_manual(
+    name = NULL,
+    values = linetype_values
+  ) +
   labs(
     title = plot_title,
-    y = paste("Speedup (vs ", SEQ_NAME, ")")
+    y = paste("Speedup (vs", SEQ_NAME, ")")
   ) +
   theme(
     panel.grid.minor = element_blank(),
     panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"),
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
     plot.title = element_text(hjust = 0.5, size = 25, face = "bold"),
-    axis.text = element_text(size = 26),
+    axis.line = element_blank(),
+    axis.ticks = element_line(color = "black"),
+    axis.ticks.length = unit(-0.25, "cm"),
+    axis.text = element_text(size = 26, colour = "black"),
     axis.title = element_text(size = 28),
-    legend.text = element_text(size = 20, face = "bold"),
-    legend.background = element_rect(fill = alpha("white", 0.75), color = alpha("black", 0.5))
+    legend.text = element_text(size = 18, face = "bold"),
+    legend.key.width = unit(1.5, "cm"), # helps prevent label crowding
+    legend.key.height = unit(0.4, "cm"), # keep key boxes compact
+    legend.margin = margin(5, 5, 5, 5),
+    legend.position = "inside",
+    legend.position.inside = c(0.98, 0.98), # (0.02, 0.98) for top-left corner, (0.98, 0.98) for top-right corner
+    legend.justification = c("right", "top"), # (left, top) for top-left corner, (right, top) for top-right corner
+    legend.background = element_rect(
+      fill = alpha("white", 0.5),
+      color = "black",
+      linewidth = 0.5
+    )
   )
 
-# Reposition legend
-reposition_legend(p, "top left", offset = 0.02)
+plot_width <- 8
+plot_height <- 6
 
-print(speedup_data)
+show_plot_with_size(p, width = plot_width, height = plot_height)
 
-# Optional: interactive plot
-# p_load(plotly)
-# ggplotly(p)
+filename <- get_plot_filename(json_dir)
+save_to_cairo_pdf(p, filename, width = plot_width, height = plot_height)
+
+# Save the plot to a PDF file and close the window if open
+dev.off()
