@@ -56,7 +56,7 @@ p <- ggplot(
     x = "Problem size (#elements)",
     y = "Time (ns)"
   ) +
-  get_theme(legend_position = "top-left")
+  get_theme(legend_position = "top-left") # Adjust legend position: "top-right" or "top-left"
 
 plot_width <- 8
 plot_height <- 6

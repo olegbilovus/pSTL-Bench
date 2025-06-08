@@ -103,8 +103,8 @@ get_theme <- function(legend_position = "top-right") {
     axis.ticks.length = unit(-0.25, "cm"),
     axis.text = element_text(size = 26, colour = "black"),
     axis.title = element_text(size = 28),
-    legend.text = element_text(size = 18, face = "bold"),
-    legend.key.width = unit(1.5, "cm"), # helps prevent label crowding
+    legend.text = element_text(size = 22),
+    legend.key.width = unit(1, "cm"), # helps prevent label crowding
     legend.key.height = unit(0.4, "cm"), # keep key boxes compact
     legend.margin = margin(5, 5, 5, 5),
     legend.position = "inside",
