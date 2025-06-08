@@ -1,23 +1,20 @@
-library(jsonlite)
-library(readr)
+if (!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman", repos = "http://cran.us.r-project.org")
+pacman::p_load(jsonlite, dplyr)
 
 from_json_dir_data <- function(json_dir) {
-# Function to import JSON data from a directory
+  # Import and combine JSON benchmark data from a directory
   json_files <- list.files(json_dir, pattern = "\\.json$", full.names = TRUE, recursive = TRUE)
-  data_list <- list()
 
-  for (json_file in json_files) {
-    json_data <- fromJSON(json_file)
+  data_list <- lapply(json_files, function(file) {
+    tryCatch({
+      json_data <- jsonlite::fromJSON(file)
+      as.data.frame(json_data$benchmarks)
+    }, error = function(e) {
+      stop(sprintf("Error reading file '%s': %s", file, e$message))
+    })
+  })
 
-    df <- as.data.frame(json_data$benchmarks)
-
-    # Append the data frame to the list
-    data_list[[length(data_list) + 1]] <- df
-  }
-
-  # Combine all data frames into one, filling missing columns with NA
-  data <- bind_rows(data_list)
-
+  data <- dplyr::bind_rows(data_list)
   return(data)
 }
 
@@ -60,14 +57,13 @@ get_palette <- function(data, skip = 0) {
 }
 
 get_seq_name <- function() {
-  return ("GNU-SEQ")
-  
+  return("GNU-SEQ")
 }
 
 sort_data_seq_first <- function(data) {
   # Sort the data so that the sequential algorithm is first
   seq_name <- get_seq_name()
-  
+
   # Check if the sequential name exists in the data
   if (seq_name %in% data$name) {
     # Move the sequential algorithm to the first position
@@ -78,42 +74,89 @@ sort_data_seq_first <- function(data) {
     data <- data %>%
       mutate(name = factor(name, levels = sort(unique(name))))
   }
-  
+
   return(data)
 }
 
-add_ideal_annotation <- function(min_threads, max_threads, max_speedup, 
-                                position = c("topright", "topleft"), 
-                                label = "Ideal", 
-                                seg_len = 0.3, 
-                                y_offset = 0.01, 
-                                size = 8) {
-  position <- match.arg(position)
-  # Helper for log interpolation
-  log_interp <- function(a, b, frac) exp(log(a) + frac * (log(b) - log(a)))
-  if (position == "topright") {
-    # Place segment and text at 80% and 90% of the log10 axis range
-    x_start <- log_interp(min_threads, max_threads, 0.80)
-    x_end   <- log_interp(min_threads, max_threads, 0.90)
-    x_text  <- log_interp(min_threads, max_threads, 0.93)
-    y_pos   <- max_speedup * (1 + y_offset)
-    hjust   <- 0
-  } else if (position == "topleft") {
-    x_start <- min_threads * (1 + 0.05)
-    x_end   <- min_threads * (1 + seg_len)
-    x_text  <- x_end
-    y_pos   <- max_speedup * (1 + y_offset)
-    hjust   <- 0
+get_theme <- function(legend_position = "top-right") {
+  # check if the legend position is valid
+  if (!legend_position %in% c("top-left", "top-right")) {
+    stop("Invalid legend position. Use 'top-left' or 'top-right'.")
   }
-  list(
-    annotate("segment",
-      x = x_start, xend = x_end,
-      y = y_pos, yend = y_pos,
-      color = "black", linewidth = 2
-    ),
-    annotate("text",
-      x = x_text, y = y_pos,
-      label = label, hjust = hjust, vjust = 0.5, size = size, fontface = "bold", color = "black"
+
+  if (legend_position == "top-left") {
+    legend_position_inside <- c(0.02, 0.98) # top-left corner
+    legend_justification <- c("left", "top")
+  } else {
+    legend_position_inside <- c(0.98, 0.98) # top-right corner
+    legend_justification <- c("right", "top")
+  }
+
+  # Define the ggplot theme
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.title = element_text(hjust = 0.5, size = 25, face = "bold"),
+    axis.line = element_blank(),
+    axis.ticks = element_line(color = "black"),
+    axis.ticks.length = unit(0.25, "cm"),
+    axis.text = element_text(size = 26, colour = "black"),
+    axis.title = element_text(size = 28),
+    legend.text = element_text(size = 20),
+    legend.key.width = unit(1, "cm"), # helps prevent label crowding
+    legend.key.height = unit(0.4, "cm"), # keep key boxes compact
+    legend.margin = margin(5, 5, 5, 5),
+    legend.position = "inside",
+    legend.position.inside = legend_position_inside,
+    legend.justification = legend_justification,
+    legend.background = element_rect(
+      fill = alpha("white", 0.25),
+      color = "black",
+      linewidth = 0
     )
   )
+}
+
+show_plot_with_size <- function(p, width = 6, height = 8) {
+  if (.Platform$OS.type == "windows") {
+    windows(width = width, height = height)
+  } else if (Sys.info()[["sysname"]] == "Linux") {
+    x11(width = width, height = height)
+  } else if (Sys.info()[["sysname"]] == "Darwin") {
+    quartz(width = width, height = height)
+  } else {
+    warning("Unknown platform. Cannot open custom-size plot window.")
+  }
+
+  print(p)
+}
+
+get_plot_filename <- function(json_dir, ext = ".pdf") {
+  # Normalize path and split into components
+  dir_parts <- strsplit(json_dir, .Platform$file.sep)[[1]]
+
+  # Remove any empty segments (e.g. from trailing slashes)
+  dir_parts <- dir_parts[dir_parts != ""]
+
+  # Get the last two components of the path
+  last_two <- tail(dir_parts, 2)
+
+  # Combine them with a dash
+  base_name <- paste(last_two, collapse = "-")
+
+  # Return the final filename
+  paste0(base_name, ext)
+}
+
+save_to_cairo_pdf <- function(p, filename, width = 6, height = 8, dir = "plots") {
+  # Save the plot to a Cairo PDF file
+  if (!dir.exists(dir)) {
+    dir.create(dir, recursive = TRUE)
+  }
+  filename <- file.path(dir, filename)
+
+  cairo_pdf(filename, width = width, height = height)
+  print(p)
+  dev.off()
 }
