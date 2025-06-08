@@ -17,7 +17,7 @@ SEQ_NAME <- get_seq_name()
 # Load and preprocess data
 data <- from_json_dir_data(json_dir) %>%
   mutate(elements = get_elements(name)) %>%
-  filter(elements == 2^29) %>%
+  filter(elements == 2^29) %>% # Filter for a specific problem size
   mutate(name = get_name(name))
 
 # Validate SEQ_NAME
@@ -73,12 +73,11 @@ ideal_line_data$name <- factor(ideal_line_data$name, levels = combined_names)
 named_palette <- setNames(palette, levels(speedup_data$name)[-1])
 color_values <- c("Ideal" = "black", named_palette)
 shape_values_all <- c(setNames(shape_values, names(named_palette)), "Ideal" = NA)
-linetype_values <- c("Ideal" = "solid", setNames(rep("solid", length(named_palette)), names(named_palette)))
 
 # Plot
 p <- ggplot(
   bind_rows(speedup_data, ideal_line_data),
-  aes(x = used_threads, y = speedup, color = name, shape = name, linetype = name)
+  aes(x = used_threads, y = speedup, color = name, shape = name)
 ) +
   geom_line(data = speedup_data, linewidth = 1) +
   geom_point(data = speedup_data, size = 6, stroke = 2) +
@@ -98,10 +97,6 @@ p <- ggplot(
     guide = guide_legend(
       override.aes = list(size = 4.5) # smaller shape size in the legend
     )
-  ) +
-  scale_linetype_manual(
-    name = NULL,
-    values = linetype_values
   ) +
   labs(
     title = plot_title,
