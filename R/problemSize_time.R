@@ -1,7 +1,5 @@
-# Load required packages
-install.packages("pacman", repos = "http://cran.us.r-project.org")
-library(pacman)
-p_load(ggplot2, tidyverse)
+if (!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman", repos = "http://cran.us.r-project.org")
+pacman::p_load(ggplot2, tidyverse)
 
 # Set theme
 theme_set(theme_bw())
@@ -70,3 +68,4 @@ save_to_cairo_pdf(p, filename, width = plot_width, height = plot_height)
 
 # Save the plot to a PDF file and close the window if open
 dev.off()
+rm(list = ls()) # Clean up the environment

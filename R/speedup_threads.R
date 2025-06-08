@@ -1,7 +1,6 @@
 # Load required packages
-install.packages("pacman", repos = "http://cran.us.r-project.org")
-library(pacman)
-p_load(ggplot2, tidyverse)
+if (!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman", repos = "http://cran.us.r-project.org")
+pacman::p_load(ggplot2, tidyverse)
 
 # Set theme
 theme_set(theme_bw())
@@ -102,29 +101,7 @@ p <- ggplot(
     x = "#Threads",
     y = paste("Speedup (vs", SEQ_NAME, ")")
   ) +
-  theme(
-    panel.grid.minor = element_blank(),
-    panel.grid.major = element_line(color = "gray", linewidth = 0.25, linetype = "dashed"),
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
-    plot.title = element_text(hjust = 0.5, size = 25, face = "bold"),
-    axis.line = element_blank(),
-    axis.ticks = element_line(color = "black"),
-    axis.ticks.length = unit(-0.25, "cm"),
-    axis.text = element_text(size = 26, colour = "black"),
-    axis.title = element_text(size = 28),
-    legend.text = element_text(size = 18, face = "bold"),
-    legend.key.width = unit(1.5, "cm"), # helps prevent label crowding
-    legend.key.height = unit(0.4, "cm"), # keep key boxes compact
-    legend.margin = margin(5, 5, 5, 5),
-    legend.position = "inside",
-    legend.position.inside = c(0.98, 0.98), # (0.02, 0.98) for top-left corner, (0.98, 0.98) for top-right corner
-    legend.justification = c("right", "top"), # (left, top) for top-left corner, (right, top) for top-right corner
-    legend.background = element_rect(
-      fill = alpha("white", 0.5),
-      color = "black",
-      linewidth = 0.5
-    )
-  )
+  get_theme(legend_position = "top-right")
 
 plot_width <- 8
 plot_height <- 6
@@ -136,3 +113,4 @@ save_to_cairo_pdf(p, filename, width = plot_width, height = plot_height)
 
 # Save the plot to a PDF file and close the window if open
 dev.off()
+rm(list = ls()) # Clean up the environment

@@ -1,23 +1,20 @@
-library(jsonlite)
-library(readr)
+if (!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman", repos = "http://cran.us.r-project.org")
+pacman::p_load(jsonlite, dplyr)
 
 from_json_dir_data <- function(json_dir) {
-  # Function to import JSON data from a directory
+  # Import and combine JSON benchmark data from a directory
   json_files <- list.files(json_dir, pattern = "\\.json$", full.names = TRUE, recursive = TRUE)
-  data_list <- list()
 
-  for (json_file in json_files) {
-    json_data <- fromJSON(json_file)
+  data_list <- lapply(json_files, function(file) {
+    tryCatch({
+      json_data <- jsonlite::fromJSON(file)
+      as.data.frame(json_data$benchmarks)
+    }, error = function(e) {
+      stop(sprintf("Error reading file '%s': %s", file, e$message))
+    })
+  })
 
-    df <- as.data.frame(json_data$benchmarks)
-
-    # Append the data frame to the list
-    data_list[[length(data_list) + 1]] <- df
-  }
-
-  # Combine all data frames into one, filling missing columns with NA
-  data <- bind_rows(data_list)
-
+  data <- dplyr::bind_rows(data_list)
   return(data)
 }
 
@@ -152,8 +149,13 @@ get_plot_filename <- function(json_dir, ext = ".pdf") {
   paste0(base_name, ext)
 }
 
-save_to_cairo_pdf <- function(p, filename, width = 6, height = 8) {
+save_to_cairo_pdf <- function(p, filename, width = 6, height = 8, dir = "plots") {
   # Save the plot to a Cairo PDF file
+  if (!dir.exists(dir)) {
+    dir.create(dir, recursive = TRUE)
+  }
+  filename <- file.path(dir, filename)
+
   cairo_pdf(filename, width = width, height = height)
   print(p)
   dev.off()
