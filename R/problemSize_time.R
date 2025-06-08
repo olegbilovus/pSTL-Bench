@@ -17,7 +17,7 @@ data <- from_json_dir_data(json_dir) %>%
   mutate(elements = get_elements(name)) %>%
   mutate(name = get_name(name)) %>%
   # Comment out the following line if you want to filter out GPU data
-  filter(!name %in% gpu_names) %>%
+  #filter(!name %in% gpu_names) %>%
   select(name, elements, real_time) %>%
   sort_data_seq_first()
 
