@@ -35,7 +35,7 @@
 
     - name: Install HPX
       ansible.builtin.command:
-        cmd: "make install"
+        cmd: "make install -j 3"
         chdir: "{{ ansible_env.HOME }}/hpx/build"
       args:
         creates: "/usr/local/include/hpx/hpx.hpp"
