@@ -64,7 +64,7 @@ speedup_data$name <- as.character(speedup_data$name)
 ideal_line_data$name <- "Ideal"
 
 # Harmonize factor levels
-combined_names <- c("Ideal", unique(speedup_data$name))
+combined_names <- c("Ideal", sort(unique(speedup_data$name)))
 speedup_data$name <- factor(speedup_data$name, levels = combined_names)
 ideal_line_data$name <- factor(ideal_line_data$name, levels = combined_names)
 
@@ -114,3 +114,4 @@ save_to_cairo_pdf(p, filename, width = plot_width, height = plot_height)
 # Save the plot to a PDF file and close the window if open
 dev.off()
 rm(list = ls()) # Clean up the environment
+
