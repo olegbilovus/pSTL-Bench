@@ -5,6 +5,7 @@
     - name: Install HPX dependencies
       ansible.builtin.apt:
         name:
+          - build-essential
           - cmake
           - libboost-all-dev
           - libhwloc-dev
