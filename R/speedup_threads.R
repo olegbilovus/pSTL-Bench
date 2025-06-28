@@ -34,15 +34,15 @@ seq_data <- data %>%
 # Remove SEQ_NAME from main dataset
 data <- data %>%
   filter(name != SEQ_NAME) %>%
-  select(name, real_time, used_threads) %>%
-  sort_data_seq_first()
+  select(name, real_time, used_threads)
 
 # Compute speedup and efficiency
 speedup_data <- data %>%
   mutate(
     speedup = seq_data$real_time / real_time,
     efficiency = speedup / used_threads
-  )
+  ) %>%
+  sort_data_seq_first()
 
 min_threads <- min(speedup_data$used_threads)
 max_threads <- max(speedup_data$used_threads)
@@ -65,11 +65,11 @@ ideal_line_data$name <- "Ideal"
 
 # Harmonize factor levels
 combined_names <- c("Ideal", unique(speedup_data$name))
-speedup_data$name <- factor(speedup_data$name, levels = combined_names)
+speedup_data$name <- factor(speedup_data$name, levels = unique(speedup_data$name), sort(unique(speedup_data$name)))
 ideal_line_data$name <- factor(ideal_line_data$name, levels = combined_names)
 
 # Prepare scales
-named_palette <- setNames(palette, levels(speedup_data$name)[-1])
+named_palette <- setNames(palette, levels(speedup_data$name))
 color_values <- c("Ideal" = "black", named_palette)
 shape_values_all <- c(setNames(shape_values, names(named_palette)), "Ideal" = NA)
 
@@ -101,7 +101,7 @@ p <- ggplot(
     x = "#Threads",
     y = paste("Speedup (vs", paste(SEQ_NAME, ")", sep = ""))
   ) +
-  get_theme(legend_position = "top-right") # Adjust legend position: "top-right" or "top-left"
+  get_theme(legend_position = "top-left") # Adjust legend position: "top-right" or "top-left"
 
 plot_width <- 8
 plot_height <- 6
