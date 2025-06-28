@@ -37,6 +37,7 @@
           {{ benchmark.out }}={{ item.1.key }}-da-{{ data_type }}-t{{ threads }}.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
         chdir: "{{ data_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
+        creates: "{{ data_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}/{{ item.1.key }}-da-{{ data_type }}-t{{ threads }}.json"
       loop: "{{ cmake_benchs }}"
       loop_control:
         label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
@@ -63,6 +64,7 @@
           {{ benchmark.out }}={{ item.1.key }}-ca-{{ data_type }}-t{{ threads }}.json
           {{ item.1.value.bench.flag_select_threads + '=' + (threads | string) if item.1.value.bench.flag_select_threads else '' }}
         chdir: "{{ data_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}"
+        creates: "{{ data_dir }}/{{ item.0 }}{{ '-k' + (kit | string) if item.0 == 'for_each' else '' }}/{{ item.1.key }}-ca-{{ data_type }}-t{{ threads }}.json"
       loop: "{{ cmake_benchs }}"
       loop_control:
         label: "{{ bench_name }}/{{ item.0 }}/{{ item.1.key }}-t{{ threads }}"
